@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Cohen House Bear</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 100%; height: 100vh; overflow: hidden; background: #1a1a2e; font-family: Arial; }
+   
+    #status {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      color: white;
+      background: rgba(0,0,0,0.7);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      max-width: 80%;
+    }
+   
+    #controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 10;
+    }
+   
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: bold;
+    }
+   
+    button:hover { background: #45a049; transform: scale(1.05); }
+    button:disabled { background: #666; cursor: not-allowed; }
+   
+    #micStatus {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #4ade80;
+      font-size: 18px;
+      text-shadow: 0 0 10px #4ade80;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="status">Loading bear...</div>
+  <div id="micStatus">Listening... say "orso"</div>
+  <div id="controls" style="display:none;">
+    <button id="testBtn">Test Voice</button>
+    <button id="micBtn">Start Listening</button>
+  </div>
+  <script type="importmap">
+  {"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
+ 
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    const status = document.getElementById('status');
+    const controls = document.getElementById('controls');
+    const testBtn = document.getElementById('testBtn');
+    const micBtn = document.getElementById('micBtn');
+    const micStatus = document.getElementById('micStatus');
+   
+    console.log('Three.js:', THREE.REVISION);
+    // Three.js setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x1a1a2e);
+    const camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 3);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+    const orbitControls = new OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    const light = new THREE.DirectionalLight(0xffffff, 0.5);
+    light.position.set(5, 5, 5);
+    scene.add(light);
+    let mixer;
+    new GLTFLoader().load('/avatar.glb', (gltf) => {
+      scene.add(gltf.scene);
+      status.textContent = 'Bear loaded!';
+      console.log('Bear loaded!');
+     
+      if (gltf.animations[0]) {
+        mixer = new THREE.AnimationMixer(gltf.scene);
+        mixer.clipAction(gltf.animations[0]).play();
+      }
+     
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const size = box.getSize(new THREE.Vector3());
+      gltf.scene.scale.setScalar(1.5 / size.y);
+      gltf.scene.position.sub(box.getCenter(new THREE.Vector3()).multiplyScalar(1.5 / size.y));
+     
+      initAI();
+    }, null, (e) => {
+      status.textContent = 'Error: ' + e.message;
+      console.error(e);
+    });
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      if (mixer) mixer.update(clock.getDelta());
+      orbitControls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+    addEventListener('resize', () => {
+      camera.aspect = innerWidth/innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+    // AI System
+    let ws = null;
+    let recognition = null;
+    let isListening = false;
+    let isWaitingForCommand = false;
+    let currentAudio = null;
+    function initAI() {
+      status.textContent = 'Ready! Say "orso" to speak';
+      controls.style.display = 'flex';
+     
+      connectWebSocket();
+      setupSpeechRecognition();
+     
+      testBtn.onclick = () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({type: 'chat', text: 'Ciao, come stai?'}));
+        }
+      };
+     
+      micBtn.onclick = toggleListening;
+    }
+    function connectWebSocket() {
+      ws = new WebSocket(`ws://${location.host}/ws`);
+     
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        status.textContent = 'Connected! Say "orso"';
+      };
+     
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Received:', data);
+       
+        if (data.type === 'speak' && data.audio_url) {
+          playAudio0(data.audio_url, data.text);
+        }
+      };
+     
+      ws.onerror = (err) => {
+        console.error('WebSocket error:', err);
+        status.textContent = 'Connection error';
+      };
+     
+      ws.onclose = () => {
+        console.log('WebSocket closed');
+        setTimeout(connectWebSocket, 2000);
+      };
+    }
+    function setupSpeechRecognition() {
+      if (!('webkitSpeechRecognition' in window)) {
+        console.warn('Speech recognition not supported');
+        micBtn.textContent = 'Not Supported';
+        micBtn.disabled = true;
+        return;
+      }
+     
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;  // НЕ ПОВТАРЯЙ
+      recognition.interimResults = false;
+      recognition.lang = 'it-IT';
+     
+      recognition.onstart = () => {
+        isListening = true;
+        micBtn.textContent = 'Listening...';
+        micStatus.style.display = 'block';
+        console.log('Listening...');
+      };
+     
+      recognition.onresult = (event) => {
+        const last = event.results.length - 1;
+        const text = event.results[last][0].transcript.toLowerCase().trim();
+        const confidence = event.results[last][0].confidence;
+       
+        console.log('Heard:', text, `(${(confidence * 100).toFixed(0)}%)`);
+       
+        const hasWakeWord = text.includes('orso') || text.includes('hey bear') || text.includes('oso');
+       
+        if (hasWakeWord && !isWaitingForCommand) {
+          console.log('Wake word detected!');
+          isWaitingForCommand = true;
+          status.textContent = 'Listening for command...';
+         
+          setTimeout(() => {
+            if (isWaitingForCommand) {
+              isWaitingForCommand = false;
+              status.textContent = 'Timeout - say "orso" again';
+            }
+          }, 5000);
+         
+        } else if (isWaitingForCommand && confidence > 0.5) {
+          isWaitingForCommand = false;
+         
+          let cleanText = text.replace('orso', '').replace('hey bear', '').replace('oso', '').trim();
+         
+          if (cleanText.length > 2 && ws && ws.readyState === WebSocket.OPEN) {
+            status.textContent = `"${cleanText}"`;
+            ws.send(JSON.stringify({type: 'chat', text: cleanText}));
+          }
+        }
+      };
+     
+      recognition.onerror = (event) => {
+        console.error('Recognition error:', event.error);
+        isListening = false;
+        micBtn.textContent = 'Start Listening';
+        micStatus.style.display = 'none';
+      };
+     
+      recognition.onend = () => {
+        isListening = false;
+        micBtn.textContent = 'Start Listening';
+        micStatus.style.display = 'none';
+      };
+    }
+    function toggleListening() {
+      if (isListening) {
+        recognition.stop();
+      } else {
+        try {
+          recognition.start();
+        } catch(e) {
+          console.error('Cannot start recognition:', e);
+        }
+      }
+    }
+    function playAudio(url, text) {
+      if (!url) return;
+      console.log('Playing:', url);
+     
+      status.textContent = `"${text}"`;
+     
+      if (recognition && isListening) {
+        recognition.stop();
+      }
+     
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+     
+      currentAudio = new Audio(url);
+      currentAudio.play().catch(err => console.error('Play error:', err));
+     
+      currentAudio.onended = () => {
+        currentAudio = null;
+        status.textContent = 'Say "orso" to speak';
+      };
+    }
+    console.log('Cohen House Bear ready');
+  </script>
+</body>
+</html>

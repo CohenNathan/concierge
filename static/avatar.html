@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LUXARA – Cohen House</title>
+  <script type="module">
+    import * as THREE from '/libs/three/three.module.js';
+    import { GLTFLoader } from '/libs/three/GLTFLoader.js';
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a0a);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 3);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
+    const directional = new THREE.DirectionalLight(0xffd700, 1);
+    directional.position.set(2, 3, 2);
+    scene.add(directional);
+
+    let model, mixer;
+    const loader = new GLTFLoader();
+    loader.load(
+      '/avatar.glb',
+      (gltf) => {
+        model = gltf.scene;
+        model.scale.set(1.5, 1.5, 1.5);
+        model.position.y = -1;
+        scene.add(model);
+        mixer = new THREE.AnimationMixer(model);
+        if (gltf.animations?.length) {
+          mixer.clipAction(gltf.animations[0]).play();
+        }
+        console.log('МЕЧКАТА Е ЗАРЕДЕНА!');
+      },
+      undefined,
+      (err) => console.error('Грешка:', err)
+    );
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (mixer) mixer.update(0.01);
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+  <style>
+    body { margin: 0; overflow: hidden; background: #0a0a0a; }
+    #status { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); font-size: 36px; color: #ffd700; text-shadow: 0 0 15px gold; }
+  </style>
+</head>
+<body>
+  <div id="status">LUXARA е готова</div>
+</body>
+</html>

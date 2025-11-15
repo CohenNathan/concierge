@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bear</title>
+  <style>
+    html,body{
+      margin:0;
+      padding:0;
+      overflow:hidden;
+      background:radial-gradient(circle at center, #0e111b, #05060a 70%);
+    }
+    canvas{display:block;}
+  </style>
+</head>
+<body>
+
+<script type="module">
+  import * as THREE from '/libs/three/three.module.js';
+  import { GLTFLoader } from '/libs/three/GLTFLoader.js';
+  import { OrbitControls } from '/libs/three/OrbitControls.js';
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0e111b);
+
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1.4, 2.4);
+
+  const renderer = new THREE.WebGLRenderer({ antialias:true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false;
+  controls.enablePan  = false;
+  controls.target.set(0, 1.2, 0);
+  controls.update();
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x222233, 1.2);
+  const dir  = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir.position.set(2,4,3);
+  scene.add(hemi, dir);
+
+  let model = null;
+  let mixer = null;
+  const clips = {};
+
+  const loader = new GLTFLoader();
+  loader.load('/avatar.glb', (gltf)=>{
+      model = gltf.scene;
+      scene.add(model);
+
+      mixer = new THREE.AnimationMixer(model);
+      gltf.animations.forEach(c=> clips[c.name]=c);
+
+      if(clips['Happy_Sway_Standing'])
+          mixer.clipAction(clips['Happy_Sway_Standing']).play();
+      else
+          mixer.clipAction(Object.values(clips)[0]).play();
+
+      fitModel();
+  });
+
+  function fitModel(){
+      const box = new THREE.Box3().setFromObject(model);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+
+      model.position.sub(center);
+      const scale = 1.25 / size.y;
+      model.scale.setScalar(scale);
+
+      camera.lookAt(0,1,0);
+      controls.target.set(0,1,0);
+      controls.update();
+  }
+
+  // ---------------- AUDIO + WS + STT AUTOSTART ----------------
+  let ws = null;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = SR ? new SR() : null;
+
+  function startAll(){
+    ws = new WebSocket('ws://' + location.host + '/ws');
+    if(recognition){
+        recognition.lang = navigator.language || 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.onresult = (e)=>{
+            const txt = e.results[e.results.length-1][0].transcript.trim();
+            if(ws.readyState === WebSocket.OPEN)
+                ws.send(JSON.stringify({type:'chat', text:txt, lang:recognition.lang.slice(0,2)}));
+        };
+        recognition.start();
+    }
+  }
+  startAll(); // AUTO START
+
+  const clock = new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    if(mixer) mixer.update(clock.getDelta());
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', ()=>{
+      const w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w/h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w,h);
+      if(model) fitModel();
+  });
+
+</script>
+</body>
+</html>
