@@ -14,7 +14,7 @@
     "@tensorflow/tfjs-core": "^4.22.0",
     "@vladmandic/face-api": "^1.7.15",
     "node-fetch": "^3.3.2",
-    "ring-client-api": "^9.13.0",
-    "three": "^0.181.0"
+    "ring-client-api": "^14.2.0",
+    "three": "^0.182.0"
   }
 }
