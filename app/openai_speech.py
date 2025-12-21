@@ -16,14 +16,17 @@ class OpenAISpeech:
             return None, None
 
         try:
+            # Use explicit language hints for better detection
             transcript = await self.client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
                 response_format="verbose_json",
-                temperature=0.2  # Slightly higher for better accuracy
+                temperature=0.0,  # Lower for more accurate transcription
+                language=None  # Auto-detect but we'll improve detection below
             )
 
             text = transcript.text.strip()
+            detected_lang = transcript.language.lower() if hasattr(transcript, 'language') else None
             
             # Block EVERYTHING except Latin alphabet
             if re.search(r'[^\x00-\x7F]', text):
@@ -42,11 +45,38 @@ class OpenAISpeech:
                 print(f"❌ Spam blocked")
                 return None, None
             
-            # Too short or too long (more relaxed - allow up to 25 words)
-            if len(text) < 3 or len(text.split()) > 25:
+            # Too short or too long (more relaxed - allow up to 30 words)
+            if len(text) < 2 or len(text.split()) > 30:
                 return None, None
 
-            lang = 'it' if transcript.language.lower() in ['it', 'italian'] else 'en'
+            # Improved language detection
+            # Check for Italian-specific words/patterns
+            italian_indicators = ['ciao', 'grazie', 'buongiorno', 'buonasera', 'come stai', 'va bene', 
+                                 'appartamento', 'prezzo', 'dove', 'quando', 'cosa', 'chi', 'perché',
+                                 'mi chiamo', 'sono', 'sei', 'è', 'parli', 'italiano']
+            
+            # Check for English-specific words/patterns
+            english_indicators = ['hello', 'thanks', 'good morning', 'good evening', 'how are you',
+                                 'apartment', 'price', 'where', 'when', 'what', 'who', 'why',
+                                 'my name', 'i am', 'you are', 'speak', 'english', 'do you']
+            
+            text_lower = text.lower()
+            italian_count = sum(1 for word in italian_indicators if word in text_lower)
+            english_count = sum(1 for word in english_indicators if word in text_lower)
+            
+            # Determine language based on indicators or Whisper detection
+            if italian_count > english_count:
+                lang = 'it'
+            elif english_count > italian_count:
+                lang = 'en'
+            elif detected_lang in ['it', 'italian', 'ita']:
+                lang = 'it'
+            elif detected_lang in ['en', 'english', 'eng']:
+                lang = 'en'
+            else:
+                # Default to Italian as it's the primary language
+                lang = 'it'
+            
             print(f"✅ [{lang}] {text}")
             return text, lang
 
