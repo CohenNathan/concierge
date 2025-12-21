@@ -20,7 +20,7 @@ class OpenAISpeech:
                 model="whisper-1",
                 file=audio_file,
                 response_format="verbose_json",
-                temperature=0.0
+                temperature=0.2  # Slightly higher for better accuracy
             )
 
             text = transcript.text.strip()
@@ -30,14 +30,20 @@ class OpenAISpeech:
                 print(f"❌ Non-Latin blocked")
                 return None, None
             
-            # Block YouTube spam
-            spam = ['subscribe', 'thank you', 'share', 'friends', 'social media', 'channel', 'video']
-            if any(s in text.lower() for s in spam):
+            # Block only obvious YouTube spam (more relaxed)
+            spam_patterns = [
+                'subscribe to my channel',
+                'like and subscribe', 
+                'check out my channel',
+                'link in description',
+                'smash that like button'
+            ]
+            if any(s in text.lower() for s in spam_patterns):
                 print(f"❌ Spam blocked")
                 return None, None
             
-            # Too short or too long
-            if len(text) < 4 or len(text.split()) > 15:
+            # Too short or too long (more relaxed - allow up to 25 words)
+            if len(text) < 3 or len(text.split()) > 25:
                 return None, None
 
             lang = 'it' if transcript.language.lower() in ['it', 'italian'] else 'en'

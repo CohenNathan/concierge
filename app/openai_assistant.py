@@ -43,7 +43,7 @@ class OpenAIAssistant:
             # Normal responses with EXACT facts
             system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina.
 
-REPLY IN {lang.upper()} ONLY! Be brief (1-3 sentences).
+REPLY IN {lang.upper()} ONLY! Be brief (1-2 sentences). Be warm and friendly.
 
 EXACT FACTS:
 APARTMENTS:
@@ -58,6 +58,8 @@ BOOKING: Save 20-25% at www.cohenhouse.it
 NAME:
 - IT: "Mi chiamo Solomon!"
 - EN: "I'm Solomon!"
+
+Answer questions directly and naturally. If asked if you speak a language, confirm it warmly.
 """
 
             response = await self.client.chat.completions.create(
@@ -66,8 +68,8 @@ NAME:
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=120,
-                temperature=0.5
+                max_tokens=100,  # Reduced for faster responses
+                temperature=0.7  # Higher for more natural responses
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}
