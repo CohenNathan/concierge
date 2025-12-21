@@ -16,11 +16,13 @@ class OpenAISpeech:
             return None, None
 
         try:
+            # ⚡ OPTIMIZATION: Use prompt for faster, more accurate transcription
             transcript = await self.client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
-                response_format="verbose_json",
-                temperature=0.0
+                response_format="json",  # ⚡ Changed from verbose_json for faster response
+                temperature=0.0,
+                prompt="Cohen House, Taormina, Sicily, apartment, BOHO, VINTAGE, SHABBY"  # Context for better accuracy
             )
 
             text = transcript.text.strip()
@@ -40,7 +42,12 @@ class OpenAISpeech:
             if len(text) < 4 or len(text.split()) > 15:
                 return None, None
 
-            lang = 'it' if transcript.language.lower() in ['it', 'italian'] else 'en'
+            # ⚡ OPTIMIZATION: Detect language from text content instead of waiting for API
+            # Italian indicators: common Italian words
+            italian_words = ['ciao', 'buongiorno', 'dove', 'quanto', 'costa', 'come', 'sei', 'grazie', 'prego']
+            has_italian = any(word in text.lower() for word in italian_words)
+            lang = 'it' if has_italian else 'en'
+            
             print(f"✅ [{lang}] {text}")
             return text, lang
 

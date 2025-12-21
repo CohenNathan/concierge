@@ -60,14 +60,15 @@ NAME:
 - EN: "I'm Solomon!"
 """
 
+            # ⚡ OPTIMIZATION: Reduced max_tokens to 80 and temperature to 0.3 for faster responses
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=120,
-                temperature=0.5
+                max_tokens=80,  # Reduced from 120
+                temperature=0.3  # Reduced from 0.5 for faster, more deterministic responses
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}

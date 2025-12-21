@@ -390,6 +390,7 @@
                 console.log('WS:', data.type, data.text ? data.text.substring(0,50) : 'no text');
                 
                 if (data.type === 'response') {
+                    // ⚡ OPTIMIZATION: Show text immediately
                     transcriptEl.textContent = data.text;
                     
                     if (data.music_playing) {
@@ -401,7 +402,15 @@
                         }, 180000);
                     }
                     
-                    if (data.audio_url) await speakAudio(data.audio_url);
+                    // Audio may come separately, don't wait for it
+                    if (data.audio_url) {
+                        await speakAudio(data.audio_url);
+                    }
+                }
+                
+                // ⚡ OPTIMIZATION: Handle separate audio message
+                if (data.type === 'audio' && data.audio_url) {
+                    await speakAudio(data.audio_url);
                 }
             };
             

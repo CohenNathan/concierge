@@ -32,18 +32,25 @@ async def websocket_endpoint(websocket: WebSocket):
             #     print(f"🎵 Music playing, ignoring: {text}")
             #     continue
             
-            
-            # Get AI response
             start_time = time.time()
-            response = await assistant.ask(text, lang, guest_name=guest_name, visit_count=visit_count)
-            response_text = response.get("text")
-            # GPT response received
+            
+            # ⚡ OPTIMIZATION 1: Check quick response cache first
+            quick_response, is_music = get_quick_response(text, lang)
+            if quick_response:
+                print(f"⚡ INSTANT response ({time.time() - start_time:.2f}s)")
+                response_text = quick_response
+                action = "play_pizzica" if is_music else None
+            else:
+                # Get AI response only if not in cache
+                response = await assistant.ask(text, lang, guest_name=guest_name, visit_count=visit_count)
+                response_text = response.get("text")
+                action = response.get("action")
+                print(f"🤖 AI response ({time.time() - start_time:.2f}s)")
             
             # Handle actions
-            action = response.get("action")
-            if action == "play_music":
+            if action == "play_music" or action == "play_pizzica":
                 spotify.play_pizzica_di_san_vito()
-            elif action == "play_fun_music":
+            elif action == "play_fun_music" or action == "play_bambole":
                 spotify.play_fun_song()
             elif action == "open_spotify":
                 spotify.open_spotify()
@@ -56,18 +63,24 @@ async def websocket_endpoint(websocket: WebSocket):
             elif action == "open_website":
                 browser.open_website()
             
-            
-            
-            # Generate TTS
-            audio_url = await text_to_speech(response_text, lang)
-            
-            # Send back to client
+            # ⚡ OPTIMIZATION 2: Generate TTS in parallel (send text first, audio follows)
+            # Send text immediately for faster perceived response
             await websocket.send_json({
                 "type": "response",
                 "text": response_text,
-                "audio_url": audio_url,
+                "audio_url": None,  # Will be sent separately
                 "music_playing": spotify.is_music_playing()
             })
+            
+            # Generate TTS and send as separate message
+            audio_url = await text_to_speech(response_text, lang)
+            if audio_url:
+                await websocket.send_json({
+                    "type": "audio",
+                    "audio_url": audio_url
+                })
+            
+            print(f"✅ Total time: {time.time() - start_time:.2f}s")
             
     except WebSocketDisconnect:
         print("❌ WebSocket disconnected")

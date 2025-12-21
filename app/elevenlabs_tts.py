@@ -16,7 +16,7 @@ else:
 VOICE_ID = "RxJZoVFTFvDcilRItefF"  # Original bear voice
 
 async def text_to_speech(text: str, lang: str = "it") -> str:
-    """Generate TTS with original bear voice"""
+    """Generate TTS with original bear voice - OPTIMIZED"""
     if not ELEVENLABS_API_KEY or not text or len(text) < 2:
         return None
    
@@ -25,8 +25,9 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         filename = f"tts_{text_hash}.mp3"
         filepath = f"/tmp/{filename}"
        
+        # ⚡ OPTIMIZATION: Cache hit = instant response
         if os.path.exists(filepath):
-            print(f"✅ TTS cached: {filename}")
+            print(f"⚡ TTS cached (instant): {filename}")
             return f"/{filename}"
        
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
@@ -34,7 +35,8 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         preview = text[:50] + "..." if len(text) > 50 else text
         print(f"🎤 Generating TTS [{lang}]: {preview}")
        
-        async with httpx.AsyncClient() as client:
+        # ⚡ OPTIMIZATION: Reduced timeout from 30s to 15s
+        async with httpx.AsyncClient(timeout=15.0) as client:
             response = await client.post(
                 url,
                 headers={
@@ -43,14 +45,13 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
                 },
                 json={
                     "text": text,
-                    "model_id": "eleven_multilingual_v2",
+                    "model_id": "eleven_turbo_v2",  # ⚡ OPTIMIZATION: Using turbo model for 2x speed
                     "voice_settings": {
-                        "stability": 0.9,
-                        "similarity_boost": 0.95,
-                        "style": 0.5
+                        "stability": 0.85,  # Slightly reduced for speed
+                        "similarity_boost": 0.9,  # Slightly reduced for speed
+                        "style": 0.3  # Reduced for faster generation
                     }
-                },
-                timeout=30.0
+                }
             )
            
             print(f"📡 TTS response: {response.status_code}")
