@@ -49,28 +49,69 @@ Solomon can perform the following actions:
 - `open_trenitalia` - Opens Trenitalia website for train tickets
 - `open_skyscanner` - Opens Skyscanner for flight bookings
 
-## Installation
+## Quick Start
 
-1. Install Python dependencies:
+### Installation
+
+**Option A: Automated Setup (Recommended)**
 ```bash
-pip install -r requirements.txt
+./setup.sh
 ```
 
-2. Set up environment variables in `.env`:
-```
-OPENAI_API_KEY=your_openai_api_key
-ELEVENLABS_API_KEY=your_elevenlabs_api_key
-```
+**Option B: Manual Installation**
 
-3. Run the server:
+1. **Install Python dependencies:**
 ```bash
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+# Option 1: Direct installation
+pip3 install -r requirements.txt
+
+# Option 2: Using virtual environment (recommended)
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip3 install -r requirements.txt
 ```
 
-4. Open browser:
+2. **Set up environment variables in `.env`:**
+```bash
+# Create .env file
+cat > .env << EOF
+OPENAI_API_KEY=your_openai_api_key_here
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+EOF
+```
+
+Get your API keys:
+- OpenAI: https://platform.openai.com/api-keys
+- ElevenLabs: https://elevenlabs.io/app/settings/api-keys
+
+3. **Start the server:**
+```bash
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+4. **Open browser:**
 ```
 http://localhost:8000
 ```
+
+### Troubleshooting
+
+**"No module named uvicorn"** - Dependencies not installed:
+```bash
+pip3 install -r requirements.txt
+```
+
+**On macOS with Homebrew Python** - Make sure to use the correct pip:
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+**Virtual environment not activated:**
+```bash
+source venv/bin/activate  # Must run this before starting server
+```
+
+For detailed troubleshooting, see [QUICKSTART.md](QUICKSTART.md)
 
 ## Testing
 
