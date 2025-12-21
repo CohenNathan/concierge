@@ -47,21 +47,27 @@ async def websocket_endpoint(websocket: WebSocket):
                 action = response.get("action")
                 print(f"🤖 AI response ({time.time() - start_time:.2f}s)")
             
-            # Handle actions
-            if action == "play_music" or action == "play_pizzica":
-                spotify.play_pizzica_di_san_vito()
-            elif action == "play_fun_music" or action == "play_bambole":
-                spotify.play_fun_song()
-            elif action == "open_spotify":
-                spotify.open_spotify()
-            elif action == "open_etna":
-                browser.open_etna()
-            elif action == "open_trenitalia":
-                browser.open_trenitalia()
-            elif action == "open_skyscanner":
-                browser.open_skyscanner()
-            elif action == "open_website":
-                browser.open_website()
+            # Handle actions with consolidated logic
+            music_actions = {
+                "play_music": spotify.play_pizzica_di_san_vito,
+                "play_pizzica": spotify.play_pizzica_di_san_vito,
+                "play_fun_music": spotify.play_fun_song,
+                "play_bambole": spotify.play_fun_song,
+                "open_spotify": spotify.open_spotify
+            }
+            
+            browser_actions = {
+                "open_etna": browser.open_etna,
+                "open_trenitalia": browser.open_trenitalia,
+                "open_skyscanner": browser.open_skyscanner,
+                "open_website": browser.open_website
+            }
+            
+            # Execute action if defined
+            if action in music_actions:
+                music_actions[action]()
+            elif action in browser_actions:
+                browser_actions[action]()
             
             # ⚡ OPTIMIZATION 2: Generate TTS in parallel (send text first, audio follows)
             # Send text immediately for faster perceived response

@@ -5,6 +5,12 @@ import re
 
 load_dotenv()
 
+# Italian language detection keywords
+ITALIAN_INDICATORS = [
+    'ciao', 'buongiorno', 'buonasera', 'dove', 'quanto', 'costa', 
+    'come', 'sei', 'grazie', 'prego', 'sono', 'mi', 'chiamo'
+]
+
 class OpenAISpeech:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -43,9 +49,8 @@ class OpenAISpeech:
                 return None, None
 
             # ⚡ OPTIMIZATION: Detect language from text content instead of waiting for API
-            # Italian indicators: common Italian words
-            italian_words = ['ciao', 'buongiorno', 'dove', 'quanto', 'costa', 'come', 'sei', 'grazie', 'prego']
-            has_italian = any(word in text.lower() for word in italian_words)
+            # Check for Italian indicators
+            has_italian = any(word in text.lower() for word in ITALIAN_INDICATORS)
             lang = 'it' if has_italian else 'en'
             
             print(f"✅ [{lang}] {text}")
