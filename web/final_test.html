@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><title>Final Test</title>
+<style>body{background:#111;color:#0f0;font:18px monospace;padding:20px}</style>
+</head><body><div id="log">Starting...</div>
+<script type="module">
+const log=document.getElementById('log');
+log.innerHTML='Loading THREE from unpkg...<br>';
+import*as THREE from'https://unpkg.com/three@0.168.0/build/three.module.js';
+log.innerHTML+='THREE loaded!<br>';
+import{GLTFLoader}from'https://unpkg.com/three@0.168.0/examples/jsm/loaders/GLTFLoader.js';
+log.innerHTML+='GLTFLoader loaded!<br>';
+const s=new THREE.Scene(),c=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100),r=new THREE.WebGLRenderer();
+c.position.set(0,1.5,4.5);r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);
+s.add(new THREE.AmbientLight(0xffffff,1));
+log.innerHTML+='Loading bear from /avatar.glb...<br>';
+new GLTFLoader().load('/avatar.glb',g=>{
+log.innerHTML+='<h1 style="color:#0f0">✅✅✅ BEAR LOADED! ✅✅✅</h1>';
+const b=g.scene;b.scale.set(2.2,2.2,2.2);b.position.set(0,-0.5,0);s.add(b);
+},undefined,e=>log.innerHTML+='<h1 style="color:red">ERROR: '+e+'</h1>');
+function loop(){requestAnimationFrame(loop);r.render(s,c)}loop();
+</script></body></html>

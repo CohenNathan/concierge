@@ -1,19 +1,69 @@
-from __future__ import annotations
 import os
+import httpx
+import hashlib
+from dotenv import load_dotenv
 
-class ElevenLabsTTS:
-    """Safe stub – if ELEVENLABS_API_KEY липсва, просто не се ползва."""
-    def __init__(self) -> None:
-        self.api_key = os.getenv("ELEVENLABS_API_KEY")
-        if not self.api_key:
-            print("⚠ ELEVENLABS_API_KEY is not set – ElevenLabsTTS is disabled, AzureTTS ще се използва.")
-            self.enabled = False
-        else:
-            self.enabled = True
+load_dotenv()
 
-    async def generate(self, text: str, lang: str = "en") -> dict:
-        """
-        Този проект в момента използва AzureTTS. Този метод е само placeholder.
-        Ако някъде бъде извикан, вдигаме ясна грешка.
-        """
-        raise RuntimeError("ElevenLabsTTS е изключен – използвай AzureTTS.")
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+
+if ELEVENLABS_API_KEY:
+    print(f"✅ ElevenLabs API key loaded")
+else:
+    print("⚠️ No ElevenLabs API key!")
+
+# Original voice
+VOICE_ID = "RxJZoVFTFvDcilRItefF"  # Original bear voice
+
+async def text_to_speech(text: str, lang: str = "it") -> str:
+    """Generate TTS with original bear voice"""
+    if not ELEVENLABS_API_KEY or not text or len(text) < 2:
+        return None
+   
+    try: 
+        text_hash = hashlib.md5(f"{text}_{lang}".encode()).hexdigest()[:8]
+        filename = f"tts_{text_hash}.mp3"
+        filepath = f"/tmp/{filename}"
+       
+        if os.path.exists(filepath):
+            print(f"✅ TTS cached: {filename}")
+            return f"/{filename}"
+       
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
+       
+        preview = text[:50] + "..." if len(text) > 50 else text
+        print(f"🎤 Generating TTS [{lang}]: {preview}")
+       
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                url,
+                headers={
+                    "xi-api-key": ELEVENLABS_API_KEY,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "text": text,
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": {
+                        "stability": 0.9,
+                        "similarity_boost": 0.95,
+                        "style": 0.5
+                    }
+                },
+                timeout=30.0
+            )
+           
+            print(f"📡 TTS response: {response.status_code}")
+           
+            if response.status_code == 200:
+                with open(filepath, 'wb') as f:
+                    f.write(response.content)
+                print(f"✅ TTS created: {filename} ({len(response.content)} bytes)")
+                return f"/{filename}"
+            else: 
+                print(f"❌ TTS error: {response.status_code} - {response.text}")
+                return None
+               
+    except Exception as e:
+        print(f"❌ TTS exception: {e}")
+        return None

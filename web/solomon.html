@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohen Smart House</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Montserrat:wght@300;400;600&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0a0a0a;
+            color: #f5f5f5;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 40px 60px;
+            text-align: center;
+            z-index: 200;
+            background: linear-gradient(180deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0) 100%);
+        }
+        
+        #header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            font-weight: 400;
+            letter-spacing: 8px;
+            color: #d4af37;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+            margin-bottom: 8px;
+        }
+        
+        #header .subtitle {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: rgba(212, 175, 55, 0.7);
+            text-transform: uppercase;
+        }
+        
+        #container { 
+            width: 100vw; 
+            height: 100vh; 
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(212,175,55,0.05) 0%, transparent 70%);
+        }
+        
+        #startButton {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            color: #0a0a0a;
+            border: 2px solid #d4af37;
+            padding: 28px 70px;
+            font-size: 18px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            letter-spacing: 3px;
+            cursor: pointer;
+            border-radius: 50px;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.4),
+                        inset 0 1px 0 rgba(255,255,255,0.3);
+            z-index: 200;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+        }
+        
+        #startButton:hover {
+            transform: translate(-50%, -50%) scale(1.05) translateY(-2px);
+            box-shadow: 0 15px 50px rgba(212, 175, 55, 0.6),
+                        inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        #startButton.hidden { display: none; }
+        
+        #statusBar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(0deg, rgba(10,10,10,0.98) 0%, rgba(10,10,10,0.8) 100%);
+            backdrop-filter: blur(20px);
+            padding: 40px 60px;
+            text-align: center;
+            z-index: 100;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        
+        #status { 
+            font-size: 16px;
+            font-weight: 400;
+            color: #d4af37;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        #transcript { 
+            font-size: 24px;
+            font-family: 'Playfair Display', serif;
+            color: #fff;
+            font-style: italic;
+            font-weight: 400;
+            min-height: 36px;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .listening #status { 
+            color: #4CAF50;
+            text-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+        
+        .speaking #status { 
+            color: #FF9800;
+            text-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+        }
+        
+        .thinking #status {
+            color: #64B5F6;
+            text-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+        }
+        
+        @keyframes glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .listening #status,
+        .thinking #status {
+            animation: glow 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Cohen Smart House</h1>
+        <div class="subtitle">Taormina • Sicily • AI Concierge</div>
+    </div>
+    
+    <div id="container"></div>
+    
+    <button id="startButton">Activate</button>
+    
+    <div id="statusBar">
+        <div id="status">Ready</div>
+        <div id="transcript"></div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.168.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.168.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
+        
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.5, 4.5);
+        camera.lookAt(0, 1, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.getElementById('container').appendChild(renderer.domElement);
+        
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        
+        const keyLight = new THREE.SpotLight(0xd4af37, 1.2);
+        keyLight.position.set(3, 5, 5);
+        keyLight.castShadow = true;
+        scene.add(keyLight);
+        
+        const fillLight = new THREE.PointLight(0xffffff, 0.4);
+        fillLight.position.set(-3, 3, -3);
+        scene.add(fillLight);
+        
+        let bear = null;
+        let mixer = null;
+        const clock = new THREE.Clock();
+        
+        const loader = new GLTFLoader();
+        loader.load('/avatar.glb', (gltf) => {
+            bear = gltf.scene;
+            bear.scale.set(2.2, 2.2, 2.2);
+            bear.position.y = -0.5;
+            scene.add(bear);
+            
+            if (gltf.animations && gltf.animations.length > 0) {
+                mixer = new THREE.AnimationMixer(bear);
+                gltf.animations.forEach((clip) => mixer.clipAction(clip).play());
+            }
+        });
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+            if (mixer) mixer.update(delta);
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        const statusEl = document.getElementById('status');
+        const transcriptEl = document.getElementById('transcript');
+        const statusBar = document.getElementById('statusBar');
+        const startButton = document.getElementById('startButton');
+        
+        let ws = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let isSpeaking = false;
+        let isMusicPlaying = false;
+        let audioContext = null;
+        let isStarted = false;
+        
+        startButton.addEventListener('click', async () => {
+            if (!isStarted) {
+                isStarted = true;
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                startButton.classList.add('hidden');
+                
+                try {
+                    // HIGH QUALITY audio settings
+                    const audioStream = await navigator.mediaDevices.getUserMedia({ 
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true,
+                            sampleRate: 48000,  // Higher quality
+                            channelCount: 1
+                        }
+                    });
+                    
+                    setupMediaRecorder(audioStream);
+                    connectWebSocket();
+                    
+                } catch (err) {
+                    console.error('Mic error:', err);
+                    statusEl.textContent = 'Please allow microphone';
+                }
+            }
+        });
+        
+        function setupMediaRecorder(stream) {
+            // Use higher quality codec
+            const options = { mimeType: 'audio/webm;codecs=opus' };
+            mediaRecorder = new MediaRecorder(stream, options);
+            
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) audioChunks.push(event.data);
+            };
+            
+            mediaRecorder.onstop = async () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                audioChunks = [];
+                
+                // Lower threshold for better capture
+                if (audioBlob.size > 30000) {
+                    await transcribeAudio(audioBlob);
+                } else {
+                    startRecording();
+                }
+            };
+        }
+        
+        async function transcribeAudio(audioBlob) {
+            try {
+                statusBar.className = 'thinking';
+                statusEl.textContent = 'Thinking';
+                
+                const formData = new FormData();
+                formData.append('file', audioBlob, 'audio.webm');
+                
+                const response = await fetch('/upload-audio', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                console.log('Transcription result:', data.text, 'lang:', data.lang);
+                
+                if (data.success && data.text) {
+                    // Block thank you loops
+                    const blocked = ['thank you', 'thanks', 'grazie'];
+                    if (blocked.some(b => data.text.toLowerCase().includes(b))) {
+                        console.log('Blocked:', data.text);
+                        startRecording();
+                        return;
+                    }
+                    
+                    const text = data.text.trim();
+                    const lang = data.lang || 'en';
+                    
+                    transcriptEl.textContent = text;
+                    console.log('Sending to WebSocket:', text, lang);
+                    
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        // Force valid language - fallback to Italian
+                        const validLangs = ['it', 'en'];
+                        const finalLang = validLangs.includes(lang) ? lang : 'it';
+                        ws.send(JSON.stringify({ text, lang: finalLang }));
+                    } else {
+                        console.error('WebSocket not open!');
+                        startRecording();
+                    }
+                } else {
+                    console.log('No text recognized');
+                    startRecording();
+                }
+            } catch (err) {
+                console.error('Transcription error:', err);
+                startRecording();
+            }
+        }
+        
+        function startRecording() {
+            if (isSpeaking || isMusicPlaying) {
+                setTimeout(() => startRecording(), 1000);
+                return;
+            }
+            
+            if (!isRecording && mediaRecorder) {
+                audioChunks = [];
+                mediaRecorder.start();
+                isRecording = true;
+                statusBar.className = 'listening';
+                statusEl.textContent = 'Listening';
+                
+                // LONGER recording time for better capture
+                setTimeout(() => {
+                    if (isRecording) stopRecording();
+                }, 12000);  // 8 seconds
+            }
+        }
+        
+        function stopRecording() {
+            if (isRecording && mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        }
+        
+        function connectWebSocket() {
+            ws = new WebSocket('ws://localhost:8000/ws');
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                statusEl.textContent = 'Connected';
+                
+                // Keepalive
+                setInterval(() => {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({ type: "ping" }));
+                    }
+                }, 30000);
+                
+                setTimeout(() => startRecording(), 2000);
+            };
+            
+            ws.onmessage = async (event) => {
+                const data = JSON.parse(event.data);
+                console.log('WS:', data.type, data.text ? data.text.substring(0,50) : 'no text');
+                
+                if (data.type === 'response') {
+                    transcriptEl.textContent = data.text;
+                    
+                    if (data.music_playing) {
+                        isMusicPlaying = true;
+                        statusEl.textContent = 'Music Playing';
+                        setTimeout(() => {
+                            isMusicPlaying = false;
+                            startRecording();
+                        }, 180000);
+                    }
+                    
+                    if (data.audio_url) await speakAudio(data.audio_url);
+                }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                statusEl.textContent = 'Connection Error';
+            };
+            
+            ws.onclose = () => {
+                console.log('WebSocket closed, reconnecting...');
+                statusEl.textContent = 'Reconnecting...';
+                setTimeout(() => connectWebSocket(), 2000);
+            };
+        }
+        
+        async function speakAudio(url) {
+            return new Promise((resolve) => {
+                isSpeaking = true;
+                statusBar.className = 'speaking';
+                statusEl.textContent = 'Speaking';
+                
+                if (isRecording) stopRecording();
+                
+                const audio = new Audio(url);
+                audio.play().catch((err) => {
+                    console.error('Audio play error:', err);
+                    isSpeaking = false;
+                    startRecording();
+                    resolve();
+                });
+                
+                audio.onended = () => {
+                    isSpeaking = false;
+                    statusBar.className = '';
+                    statusEl.textContent = 'Listening';
+                    transcriptEl.textContent = '';
+                    setTimeout(() => startRecording(), 1000);
+                    resolve();
+                };
+            });
+        }
+    </script>
+</body>
+</html>

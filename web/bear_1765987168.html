@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"/><title>Bear</title>
+<style>body{margin:0;background:#000;color:#0f0;font:14px monospace}#log{position:fixed;top:10px;left:10px;z-index:999}</style>
+</head><body><div id="log">Starting...</div>
+<script type="module">
+const l=document.getElementById('log');
+l.innerHTML='1. Loading THREE...<br>';
+import*as THREE from'https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js';
+l.innerHTML+='2. THREE OK<br>';
+import{GLTFLoader}from'https://cdn.jsdelivr.net/npm/three@0.168.0/examples/jsm/loaders/GLTFLoader.js';
+l.innerHTML+='3. Loader OK<br>';
+const s=new THREE.Scene();s.background=new THREE.Color(0x0f0c29);
+const c=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);c.position.set(0,1.5,4.5);
+const r=new THREE.WebGLRenderer();r.setSize(innerWidth,innerHeight);document.body.appendChild(r.domElement);
+s.add(new THREE.AmbientLight(0xffffff,1));
+l.innerHTML+='4. Loading bear...<br>';
+new GLTFLoader().load('/avatar.glb',g=>{
+l.innerHTML+='5. ✅ BEAR LOADED!<br>';
+const b=g.scene;b.scale.set(2.2,2.2,2.2);b.position.set(0,-0.5,0);s.add(b);
+},p=>l.innerHTML+='Progress: '+Math.round(p.loaded/p.total*100)+'%<br>',e=>l.innerHTML+='❌ ERROR: '+e+'<br>');
+function loop(){requestAnimationFrame(loop);r.render(s,c)}loop();
+</script></body></html>

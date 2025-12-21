@@ -23,3 +23,46 @@ Thumbs.db
 node_modules/
 *.cache
 *.pkl
+
+# TTS cache
+tts_*.mp3
+
+# PID files
+server.pid
+
+# Backups
+*.backup
+*.OLD
+*.broken
+
+# Logs
+*.log
+
+# Python cache
+__pycache__
+*.pyc
+
+
+# TTS cache
+tts_cache/
+*.mp3
+audio_cache/
+
+# Backup files  
+*.backup
+*.OLD
+*.broken
+*~
+
+# Data files
+data/
+server.pid
+*.pid
+
+# Face recognition
+*.pkl
+*.dat
+
+# Python cache
+__pycache__/
+*.pyc
