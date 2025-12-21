@@ -1,105 +1,148 @@
 QUICK_RESPONSES = {
     'it': {
-        # Greetings
+        # Greetings - More variations
         'mi senti': "Sì, ti sento perfettamente!",
         'buongiorno': "Buongiorno! Benvenuto a Cohen House.",
         'buonasera': "Buonasera! Come posso aiutarti?",
         'ciao': "Ciao! Come posso aiutarti?",
         'salve': "Salve! Benvenuto!",
+        'buonanotte': "Buonanotte! Riposa bene!",
         
-        # Language
+        # Language - Enhanced
         'parli inglese': "Sì, parlo inglese. How can I help?",
         'parli italiano': "Certo! Sono Solomon, il tuo assistente.",
+        'che lingua': "Parlo italiano e inglese perfettamente!",
+        'english': "Yes! I speak English. Parlo anche italiano!",
         
-        # Location
-        'dove': "Via Nazionale, 20 metri da Isola Bella.",
-        'dove siete': "Via Nazionale, 20 metri da Isola Bella.",
-        'indirizzo': "Via Nazionale, Taormina, vicino a Isola Bella.",
-        'spiaggia': "Isola Bella è a 20 metri da qui!",
-        'mare': "Il mare è vicinissimo, 20 metri!",
+        # Location - More precise
+        'dove': "Via Nazionale, esattamente 20 metri da Isola Bella.",
+        'dove siete': "Via Nazionale, Taormina, 20 metri dalla spiaggia.",
+        'indirizzo': "Via Nazionale, Taormina, Sicilia. Vicino Isola Bella!",
+        'spiaggia': "Isola Bella è a esattamente 20 metri!",
+        'mare': "Il mare è vicinissimo, solo 20 metri!",
+        'distanza': "20 metri da Isola Bella, 5 minuti a piedi dal centro!",
         
-        # Shopping
-        'supermercato': "Sotto di noi, di fronte Isola Bella!",
-        'negozi': "Il supermercato è sotto di noi, altri negozi in centro.",
-        'spesa': "Supermercato proprio sotto di noi!",
+        # Shopping - Clearer
+        'supermercato': "Proprio sotto di noi, di fronte Isola Bella!",
+        'negozi': "Supermercato sotto, centro città 5 minuti a piedi.",
+        'spesa': "Supermercato sotto Cohen House, comodissimo!",
+        'shopping': "Centro Taormina a 5 minuti, supermercato sotto!",
         
-        # Prices
-        'prezzo': "€450-500/notte. Diretto: -20%!",
-        'quanto costa': "€450-500/notte. Prenota diretto per -20%!",
-        'costo': "€450-500 a notte. Sconto 20% su cohenhouse.it!",
+        # Prices - Exact numbers
+        'prezzo': "BOHO €500/notte, VINTAGE e SHABBY €450/notte. Diretto: -20%!",
+        'quanto costa': "€450-500/notte. Prenota su cohenhouse.it, sconto 20%!",
+        'costo': "BOHO €500, VINTAGE €450, SHABBY €450 a notte.",
+        'economico': "VINTAGE e SHABBY €450/notte, sconto 20% diretto!",
         
-        # Apartments
-        'boho': "BOHO: 100m², 10 ospiti, €500/notte, terrazza vista Etna!",
-        'vintage': "VINTAGE: 90m², 8 ospiti, €450/notte, balcone su Isola Bella!",
-        'shabby': "SHABBY: 90m², 8 ospiti, €450/notte, stile shabby chic!",
-        'appartamenti': "3 appartamenti: BOHO, VINTAGE, SHABBY. Vuoi dettagli?",
+        # Apartments - Complete info
+        'boho': "BOHO: 100m², max 10 ospiti, €500/notte, terrazza vista Etna!",
+        'vintage': "VINTAGE: 90m², max 8 ospiti, €450/notte, balcone Isola Bella!",
+        'shabby': "SHABBY: 90m², max 8 ospiti, €450/notte, shabby chic pastello!",
+        'appartamenti': "3 appartamenti: BOHO (10 ospiti), VINTAGE e SHABBY (8 ospiti).",
+        'più grande': "BOHO è il più grande: 100m², 10 ospiti, €500/notte!",
+        'più piccolo': "VINTAGE e SHABBY: 90m², 8 ospiti, €450/notte ciascuno.",
+        'quanti ospiti': "BOHO max 10, VINTAGE max 8, SHABBY max 8 ospiti.",
         
-        # Booking
-        'prenotare': "Prenota su www.cohenhouse.it - Sconto 20%!",
-        'disponibilità': "Controlla su www.cohenhouse.it per date disponibili!",
-        'libro': "Prenota direttamente su cohenhouse.it per il miglior prezzo!",
+        # Booking - Clear instructions
+        'prenotare': "www.cohenhouse.it - Prenota diretto, sconto 20-25%!",
+        'disponibilità': "Controlla date su www.cohenhouse.it!",
+        'libro': "Prenota su cohenhouse.it per il miglior prezzo, -20%!",
+        'sito': "www.cohenhouse.it - Prenota diretto per risparmiare!",
+        'contatto': "info@cohenhouse.com o www.cohenhouse.it",
+        'email': "info@cohenhouse.com",
+        
+        # Features - Specific
+        'vista': "BOHO ha terrazza con vista Etna, VINTAGE balcone Isola Bella!",
+        'balcone': "VINTAGE ha balcone su Isola Bella, BOHO terrazza vista Etna!",
+        'terrazza': "BOHO ha terrazza privata con vista Monte Etna!",
         
         # Music
         'musica': "FIRE!",
         'canzone': "FIRE!",
+        'suona': "FIRE!",
         
-        # Name
-        'chi sei': "Sono Solomon, il tuo orso concierge AI!",
-        'nome': "Mi chiamo Solomon!",
+        # Name/Identity
+        'chi sei': "Sono Solomon, orso AI concierge di Cohen House!",
+        'nome': "Mi chiamo Solomon! Sono qui 24/7 per aiutarti!",
+        'solomon': "Sì, sono Solomon! Come posso aiutarti?",
         
         # Thanks
-        'grazie': "Prego! Sono qui per aiutarti!",
+        'grazie': "Prego! Sono sempre qui per te!",
+        'perfetto': "Ottimo! Altro da sapere su Cohen House?",
     },
     'en': {
-        # Greetings
+        # Greetings - More variations
         'hello': "Hello! Welcome to Cohen House.",
         'hi': "Hi! How can I help you?",
-        'good morning': "Good morning! Welcome!",
-        'good evening': "Good evening! How can I assist?",
+        'hey': "Hey! Welcome! What can I do for you?",
+        'good morning': "Good morning! Welcome to Cohen House!",
+        'good evening': "Good evening! How can I assist you?",
+        'good night': "Good night! Sleep well!",
         
-        # Language
-        'speak italian': "Sì! Posso parlare italiano!",
-        'speak english': "Yes, I speak English. How can I help?",
+        # Language - Enhanced
+        'speak italian': "Sì! Posso parlare italiano perfettamente!",
+        'speak english': "Yes! I speak perfect English!",
+        'language': "I speak Italian and English fluently!",
+        'italian': "Sì! Parlo italiano! Yes, I speak Italian!",
         
-        # Location
-        'where': "Via Nazionale, 20 meters from Isola Bella.",
-        'location': "Via Nazionale, Taormina, 20m from the beach!",
-        'address': "Via Nazionale, Taormina, Sicily.",
-        'beach': "Isola Bella beach is just 20 meters away!",
+        # Location - More precise
+        'where': "Via Nazionale, Taormina, exactly 20 meters from Isola Bella.",
+        'location': "Via Nazionale, just 20 meters from the beach!",
+        'address': "Via Nazionale, Taormina, Sicily, near Isola Bella.",
+        'beach': "Isola Bella beach is exactly 20 meters away!",
         'sea': "The sea is super close, only 20 meters!",
+        'distance': "20 meters to Isola Bella, 5-minute walk to town center!",
         
-        # Shopping
-        'supermarket': "Below us, opposite Isola Bella!",
-        'shop': "Supermarket below us, more shops in town center.",
+        # Shopping - Clearer
+        'supermarket': "Right below us, opposite Isola Bella beach!",
+        'shop': "Supermarket below, town center 5-minute walk.",
         'grocery': "Grocery store right below Cohen House!",
+        'shopping': "Town center 5 minutes, supermarket downstairs!",
         
-        # Prices
-        'price': "€450-500/night. Direct: save 20%!",
-        'cost': "€450-500 per night. Book direct at cohenhouse.it for 20% off!",
-        'how much': "€450-500/night. Save 20% booking direct!",
+        # Prices - Exact numbers
+        'price': "BOHO €500/night, VINTAGE & SHABBY €450/night. Direct: save 20%!",
+        'cost': "BOHO €500, VINTAGE €450, SHABBY €450 per night.",
+        'how much': "€450-500/night. Book direct at cohenhouse.it, save 20%!",
+        'cheap': "VINTAGE and SHABBY €450/night, 20% off direct booking!",
+        'expensive': "BOHO €500/night (largest, 10 guests). Others €450.",
         
-        # Apartments
-        'boho': "BOHO: 100m², 10 guests, €500/night, terrace with Etna view!",
-        'vintage': "VINTAGE: 90m², 8 guests, €450/night, balcony over Isola Bella!",
-        'shabby': "SHABBY: 90m², 8 guests, €450/night, shabby chic style!",
-        'apartments': "3 apartments: BOHO, VINTAGE, SHABBY. Want details?",
+        # Apartments - Complete info
+        'boho': "BOHO: 100m², max 10 guests, €500/night, terrace with Etna view!",
+        'vintage': "VINTAGE: 90m², max 8 guests, €450/night, balcony over Isola Bella!",
+        'shabby': "SHABBY: 90m², max 8 guests, €450/night, shabby chic style!",
+        'apartments': "3 apartments: BOHO (10 guests), VINTAGE & SHABBY (8 guests each).",
+        'biggest': "BOHO is largest: 100m², 10 guests, €500/night!",
+        'smallest': "VINTAGE & SHABBY: 90m², 8 guests, €450/night each.",
+        'how many': "BOHO max 10, VINTAGE max 8, SHABBY max 8 guests.",
+        'capacity': "BOHO fits 10, VINTAGE and SHABBY fit 8 people each.",
         
-        # Booking
-        'book': "Book at www.cohenhouse.it - Save 20%!",
-        'reserve': "Reserve directly at cohenhouse.it for best price!",
-        'availability': "Check www.cohenhouse.it for available dates!",
+        # Booking - Clear instructions
+        'book': "www.cohenhouse.it - Book direct, save 20-25%!",
+        'reserve': "Reserve at www.cohenhouse.it for best price!",
+        'availability': "Check dates at www.cohenhouse.it!",
+        'website': "www.cohenhouse.it - Direct booking saves 20%!",
+        'contact': "info@cohenhouse.com or www.cohenhouse.it",
+        'email': "info@cohenhouse.com",
+        
+        # Features - Specific
+        'view': "BOHO has Etna view terrace, VINTAGE balcony over Isola Bella!",
+        'balcony': "VINTAGE has balcony overlooking Isola Bella beach!",
+        'terrace': "BOHO has private terrace with Mount Etna view!",
         
         # Music
         'music': "FIRE!",
         'song': "FIRE!",
+        'play': "FIRE!",
         
-        # Name
-        'who are you': "I'm Solomon, your AI bear concierge!",
-        'your name': "I'm Solomon!",
+        # Name/Identity
+        'who are you': "I'm Solomon, AI bear concierge at Cohen House!",
+        'your name': "I'm Solomon! Here 24/7 to help you!",
+        'solomon': "Yes, that's me! How can I help?",
         
         # Thanks
-        'thank': "You're welcome! Here to help!",
-        'thanks': "My pleasure! Anything else?",
+        'thank': "You're welcome! Always here to help!",
+        'thanks': "My pleasure! Anything else about Cohen House?",
+        'perfect': "Great! Anything else you'd like to know?",
     }
 }
 
@@ -110,9 +153,10 @@ def get_quick_response(text: str, lang: str):
     text_lower = text.lower()
     responses = QUICK_RESPONSES.get(lang, {})
     
+    # ⚡ SPEED OPTIMIZATION: Try exact keyword match first
     for keyword, response in responses.items():
         if keyword in text_lower:
-            is_music = keyword in ['musica', 'music', 'canzone', 'song']
+            is_music = keyword in ['musica', 'music', 'canzone', 'song', 'suona', 'play']
             print(f"⚡ INSTANT: {keyword}")
             return response, is_music
     

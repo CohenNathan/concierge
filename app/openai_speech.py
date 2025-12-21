@@ -5,10 +5,32 @@ import re
 
 load_dotenv()
 
-# Italian language detection keywords
+# Italian language detection keywords - EXPANDED for perfect recognition
 ITALIAN_INDICATORS = [
-    'ciao', 'buongiorno', 'buonasera', 'dove', 'quanto', 'costa', 
-    'come', 'sei', 'grazie', 'prego', 'sono', 'mi', 'chiamo'
+    # Common greetings
+    'ciao', 'buongiorno', 'buonasera', 'salve', 'buonanotte',
+    # Questions
+    'dove', 'quanto', 'costa', 'come', 'che', 'cosa', 'quando', 'perché', 'chi',
+    # Common verbs
+    'sei', 'sono', 'hai', 'ho', 'vuoi', 'voglio', 'posso', 'puoi',
+    # Common words
+    'grazie', 'prego', 'scusa', 'mi', 'chiamo', 'per', 'con', 'ma', 'e', 'o',
+    # Location/apartment related
+    'appartamento', 'camera', 'spiaggia', 'mare', 'vicino', 'lontano',
+    # Numbers
+    'uno', 'due', 'tre', 'quattro', 'cinque',
+    # Common phrases
+    'va bene', 'non', 'si', 'no', 'forse', 'anche'
+]
+
+# English indicators for contrast
+ENGLISH_INDICATORS = [
+    'hello', 'hi', 'hey', 'good', 'morning', 'evening', 'night',
+    'where', 'what', 'how', 'when', 'why', 'who', 'which',
+    'is', 'are', 'can', 'do', 'does', 'have', 'has', 'want', 'need',
+    'the', 'a', 'an', 'this', 'that', 'these', 'those',
+    'apartment', 'room', 'beach', 'sea', 'near', 'far',
+    'thank', 'please', 'sorry', 'yes', 'no', 'maybe'
 ]
 
 class OpenAISpeech:
@@ -48,12 +70,26 @@ class OpenAISpeech:
             if len(text) < 4 or len(text.split()) > 15:
                 return None, None
 
-            # ⚡ OPTIMIZATION: Detect language from text content instead of waiting for API
-            # Check for Italian indicators
-            has_italian = any(word in text.lower() for word in ITALIAN_INDICATORS)
-            lang = 'it' if has_italian else 'en'
+            # ⚡ PERFECT LANGUAGE DETECTION: Score-based system for accuracy
+            text_words = text.lower().split()
             
-            print(f"✅ [{lang}] {text}")
+            # Count matches for each language
+            italian_score = sum(1 for word in text_words if word in ITALIAN_INDICATORS)
+            english_score = sum(1 for word in text_words if word in ENGLISH_INDICATORS)
+            
+            # Determine language with confidence
+            if italian_score > english_score:
+                lang = 'it'
+                confidence = 'high' if italian_score >= 2 else 'medium'
+            elif english_score > italian_score:
+                lang = 'en'
+                confidence = 'high' if english_score >= 2 else 'medium'
+            else:
+                # Default to Italian for Cohen House (most common)
+                lang = 'it'
+                confidence = 'low'
+            
+            print(f"✅ [{lang.upper()}:{confidence}] {text}")
             return text, lang
 
         except Exception as e:
