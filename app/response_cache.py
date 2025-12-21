@@ -28,10 +28,10 @@ QUICK_RESPONSES = {
         'spesa': "Supermercato sotto Cohen House, comodissimo!",
         'shopping': "Centro Taormina a 5 minuti, supermercato sotto!",
         
-        # Prices - Exact numbers
-        'prezzo': "BOHO €500/notte, VINTAGE e SHABBY €450/notte. Diretto: -20%!",
+        # Prices - Exact numbers with consistent discount
+        'prezzo': "BOHO €500/notte, VINTAGE e SHABBY €450/notte. Sconto 20% diretto!",
         'quanto costa': "€450-500/notte. Prenota su cohenhouse.it, sconto 20%!",
-        'costo': "BOHO €500, VINTAGE €450, SHABBY €450 a notte.",
+        'costo': "BOHO €500, VINTAGE €450, SHABBY €450 a notte. Diretto: -20%!",
         'economico': "VINTAGE e SHABBY €450/notte, sconto 20% diretto!",
         
         # Apartments - Complete info
@@ -43,12 +43,12 @@ QUICK_RESPONSES = {
         'più piccolo': "VINTAGE e SHABBY: 90m², 8 ospiti, €450/notte ciascuno.",
         'quanti ospiti': "BOHO max 10, VINTAGE max 8, SHABBY max 8 ospiti.",
         
-        # Booking - Clear instructions
-        'prenotare': "www.cohenhouse.it - Prenota diretto, sconto 20-25%!",
-        'disponibilità': "Controlla date su www.cohenhouse.it!",
-        'libro': "Prenota su cohenhouse.it per il miglior prezzo, -20%!",
-        'sito': "www.cohenhouse.it - Prenota diretto per risparmiare!",
-        'contatto': "info@cohenhouse.com o www.cohenhouse.it",
+        # Booking - Clear instructions with consistent discount
+        'prenotare': "www.cohenhouse.it - Prenota diretto, sconto 20%!",
+        'disponibilità': "Controlla date su www.cohenhouse.it - Sconto 20% diretto!",
+        'libro': "Prenota su cohenhouse.it, sconto 20% sul prezzo!",
+        'sito': "www.cohenhouse.it - Prenota diretto, risparmia 20%!",
+        'contatto': "info@cohenhouse.com o www.cohenhouse.it - Sconto 20% diretto!",
         'email': "info@cohenhouse.com",
         
         # Features - Specific
@@ -99,12 +99,12 @@ QUICK_RESPONSES = {
         'grocery': "Grocery store right below Cohen House!",
         'shopping': "Town center 5 minutes, supermarket downstairs!",
         
-        # Prices - Exact numbers
+        # Prices - Exact numbers with consistent discount
         'price': "BOHO €500/night, VINTAGE & SHABBY €450/night. Direct: save 20%!",
-        'cost': "BOHO €500, VINTAGE €450, SHABBY €450 per night.",
+        'cost': "BOHO €500, VINTAGE €450, SHABBY €450 per night. Book direct: -20%!",
         'how much': "€450-500/night. Book direct at cohenhouse.it, save 20%!",
-        'cheap': "VINTAGE and SHABBY €450/night, 20% off direct booking!",
-        'expensive': "BOHO €500/night (largest, 10 guests). Others €450.",
+        'cheap': "VINTAGE and SHABBY €450/night, save 20% booking direct!",
+        'expensive': "BOHO €500/night (largest, 10 guests). Save 20% direct!",
         
         # Apartments - Complete info
         'boho': "BOHO: 100m², max 10 guests, €500/night, terrace with Etna view!",
@@ -116,12 +116,12 @@ QUICK_RESPONSES = {
         'how many': "BOHO max 10, VINTAGE max 8, SHABBY max 8 guests.",
         'capacity': "BOHO fits 10, VINTAGE and SHABBY fit 8 people each.",
         
-        # Booking - Clear instructions
-        'book': "www.cohenhouse.it - Book direct, save 20-25%!",
-        'reserve': "Reserve at www.cohenhouse.it for best price!",
-        'availability': "Check dates at www.cohenhouse.it!",
+        # Booking - Clear instructions with consistent discount
+        'book': "www.cohenhouse.it - Book direct, save 20%!",
+        'reserve': "Reserve at www.cohenhouse.it, save 20% direct!",
+        'availability': "Check dates at www.cohenhouse.it - Direct saves 20%!",
         'website': "www.cohenhouse.it - Direct booking saves 20%!",
-        'contact': "info@cohenhouse.com or www.cohenhouse.it",
+        'contact': "info@cohenhouse.com or www.cohenhouse.it - Save 20% direct!",
         'email': "info@cohenhouse.com",
         
         # Features - Specific
