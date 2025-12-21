@@ -44,6 +44,7 @@ class OpenAIAssistant:
             common_questions = {
                 'it': {
                     'ciao': "Ciao! Sono Solomon, il tuo orso concierge. Come posso aiutarti?",
+                    'mi senti': "Sì, ti sento perfettamente! Sono Solomon.",
                     'parli italiano': "Sì, parlo italiano! Sono Solomon.",
                     'chi sei': "Mi chiamo Solomon! Sono l'orso concierge di Cohen House.",
                     'come ti chiami': "Mi chiamo Solomon!",
@@ -55,6 +56,7 @@ class OpenAIAssistant:
                     'do you speak english': "Yes, I speak English! I'm Solomon, your concierge bear.",
                     'who are you': "I'm Solomon! The concierge bear at Cohen House.",
                     'what is your name': "I'm Solomon!",
+                    'hear me': "Yes, I hear you! I'm Solomon.",
                 }
             }
             
@@ -68,12 +70,14 @@ class OpenAIAssistant:
 
 CRITICAL: REPLY IN {lang.upper()} ONLY! Be VERY brief (1 short sentence max). Direct answers only.
 
-FACTS:
-APARTMENTS: BOHO 100m² €500, VINTAGE 90m² €450, SHABBY 90m² €450
-LOCATION: Via Nazionale, 20m from Isola Bella
-BOOKING: www.cohenhouse.it
+KEY FACTS:
+- LOCATION: Via Nazionale, 20m from Isola Bella beach
+- Mazzarò Beach: 100-150m walking distance (2-3 min walk)
+- Isola Bella: Direct access, 20m
+- APARTMENTS: BOHO 100m² €500, VINTAGE 90m² €450, SHABBY 90m² €450
+- BOOKING: www.cohenhouse.it
 
-Answer directly. No long explanations."""
+Answer ONLY what's asked. No extra info."""
 
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -81,9 +85,9 @@ Answer directly. No long explanations."""
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=60,  # Reduced to 60 for faster responses
-                temperature=0.8,  # Slightly higher for natural responses
-                top_p=0.9  # Add for better quality with fewer tokens
+                max_tokens=50,  # Further reduced to 50 for even faster responses
+                temperature=0.9,  # Higher for more direct, natural responses
+                top_p=0.95  # Higher for better quality
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}

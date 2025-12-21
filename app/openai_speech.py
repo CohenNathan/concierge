@@ -33,32 +33,40 @@ class OpenAISpeech:
                 print(f"❌ Non-Latin blocked")
                 return None, None
             
-            # Block only obvious YouTube spam (more relaxed)
+            # Block only obvious YouTube spam + generic endings
             spam_patterns = [
                 'subscribe to my channel',
                 'like and subscribe', 
                 'check out my channel',
                 'link in description',
-                'smash that like button'
+                'smash that like button',
+                'thanks for watching',
+                'thank you for watching',
+                'see you next time',
+                'don\'t forget to subscribe'
             ]
             if any(s in text.lower() for s in spam_patterns):
-                print(f"❌ Spam blocked")
+                print(f"❌ Spam blocked: {text}")
                 return None, None
             
             # Too short or too long (more relaxed - allow up to 30 words)
             if len(text) < 2 or len(text.split()) > 30:
                 return None, None
 
-            # Improved language detection
+            # Improved language detection with better Italian coverage
             # Check for Italian-specific words/patterns
             italian_indicators = ['ciao', 'grazie', 'buongiorno', 'buonasera', 'come stai', 'va bene', 
                                  'appartamento', 'prezzo', 'dove', 'quando', 'cosa', 'chi', 'perché',
-                                 'mi chiamo', 'sono', 'sei', 'è', 'parli', 'italiano']
+                                 'mi chiamo', 'sono', 'sei', 'è', 'parli', 'italiano', 'senti', 
+                                 'quanto', 'costa', 'dista', 'lontano', 'vicino', 'bella', 'spiaggia',
+                                 'mare', 'casa', 'come', 'molto', 'poco', 'bene', 'male']
             
             # Check for English-specific words/patterns
             english_indicators = ['hello', 'thanks', 'good morning', 'good evening', 'how are you',
                                  'apartment', 'price', 'where', 'when', 'what', 'who', 'why',
-                                 'my name', 'i am', 'you are', 'speak', 'english', 'do you']
+                                 'my name', 'i am', 'you are', 'speak', 'english', 'do you',
+                                 'how much', 'how far', 'away', 'near', 'beach', 'sea', 'house',
+                                 'get to', 'from', 'very', 'good', 'bad', 'tell me', 'about']
             
             text_lower = text.lower()
             italian_count = sum(1 for word in italian_indicators if word in text_lower)
