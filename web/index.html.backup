@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"/><title>Solomon — Cohen House</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.168.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.168.0/examples/jsm/"}}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui;background:radial-gradient(circle,#0f0c29,#000);overflow:hidden;height:100vh;color:#fff}
+canvas{display:block}
+.bar{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(15,15,15,.8);backdrop-filter:blur(40px);border:1px solid rgba(255,255,255,.1);border-radius:60px;padding:18px 32px;z-index:100;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Playfair Display'}
+.brand{position:fixed;top:40px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.25);font-family:'Playfair Display';z-index:100}
+button{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);padding:15px 40px;background:#ffd700;color:#000;border:none;border-radius:30px;font-size:13px;letter-spacing:3px;cursor:pointer;font-family:'Playfair Display';z-index:99}
+button.hide{display:none}
+</style>
+</head><body>
+<div class="brand">COHEN HOUSE · TAORMINA</div>
+<button id="btn">START</button>
+<div class="bar"><div id="txt">Ready</div></div>
+<script type="module">
+import*as THREE from'three';
+import{GLTFLoader}from'three/addons/loaders/GLTFLoader.js';
+let ws,rec,bear,mix,speaking=false,currentAudio=null;
+const txt=document.getElementById('txt'),btn=document.getElementById('btn');
+ws=new WebSocket('ws://'+location.host+'/ws');
+ws.onopen=()=>console.log('✅ WS');
+ws.onmessage=e=>{
+  const d=JSON.parse(e.data);
+  if(d.text){console.log('🐻:',d.text);txt.textContent=d.text;}
+  if(d.audio_url){
+    speaking=true;
+    if(currentAudio){currentAudio.pause();currentAudio=null;}
+    if(rec){try{rec.stop();}catch(e){}}
+    txt.textContent='Speaking...';
+    currentAudio=new Audio(d.audio_url);
+    currentAudio.onended=()=>{
+      currentAudio=null;
+      speaking=false;
+      txt.textContent='Listening...';
+      setTimeout(()=>{if(rec && !speaking)try{rec.start();}catch(e){}},2000);
+    };
+    currentAudio.play();
+  }
+};
+function startRec(){if(!rec){rec=new webkitSpeechRecognition();rec.continuous=true;rec.interimResults=true;rec.lang='it-IT';rec.onstart=()=>{txt.textContent='Listening...';};rec.onresult=e=>{const r=e.results[e.results.length-1];if(!r.isFinal)return;const t=r[0].transcript.trim();console.log('Said:',t);let lang='it';if(/[\u0590-\u05FF]/.test(t))lang='he';else if(/[А-Яа-я]/.test(t))lang='bg';else if(/\b(what|how|price)\b/i.test(t))lang='en';ws.send(JSON.stringify({type:'chat',text:t,language:lang}));};rec.onend=()=>{if(!speaking)setTimeout(()=>startRec(),1000);};}rec.start();}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0f0c29);
+const cam=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);cam.position.set(0,1.5,4.5);
+const rend=new THREE.WebGLRenderer({antialias:true});rend.setSize(innerWidth,innerHeight);document.body.appendChild(rend.domElement);
+scene.add(new THREE.AmbientLight(0xffd700,.8));
+const light=new THREE.SpotLight(0xffd700,2.5);light.position.set(5,8,5);scene.add(light);
+new GLTFLoader().load('/avatar.glb',g=>{bear=g.scene;bear.scale.set(2.2,2.2,2.2);bear.position.set(0,-0.5,0);scene.add(bear);if(g.animations?.length){mix=new THREE.AnimationMixer(bear);g.animations.forEach(c=>mix.clipAction(c).play());}console.log('🐻 Bear loaded!');});
+const clk=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);if(mix)mix.update(clk.getDelta());rend.render(scene,cam)}loop();
+btn.onclick=async()=>{btn.classList.add('hide');const ctx=new(window.AudioContext||window.webkitAudioContext)();await ctx.resume();startRec();};
+</script></body></html>
