@@ -40,25 +40,44 @@ class OpenAIAssistant:
                 ]
                 return {"text": random.choice(phrases), "action": "open_spotify"}
 
-            # Normal responses with EXACT facts
+            # Fast responses for common questions
+            common_questions = {
+                'it': {
+                    'ciao': "Ciao! Sono Solomon, il tuo orso concierge. Come posso aiutarti?",
+                    'mi senti': "Sì, ti sento perfettamente! Sono Solomon.",
+                    'parli italiano': "Sì, parlo italiano! Sono Solomon.",
+                    'chi sei': "Mi chiamo Solomon! Sono l'orso concierge di Cohen House.",
+                    'come ti chiami': "Mi chiamo Solomon!",
+                },
+                'en': {
+                    'hello': "Hello! I'm Solomon, your bear concierge. How can I help you?",
+                    'hi': "Hi! I'm Solomon. How can I assist you today?",
+                    'speak english': "Yes, I speak English! I'm Solomon.",
+                    'do you speak english': "Yes, I speak English! I'm Solomon, your concierge bear.",
+                    'who are you': "I'm Solomon! The concierge bear at Cohen House.",
+                    'what is your name': "I'm Solomon!",
+                    'hear me': "Yes, I hear you! I'm Solomon.",
+                }
+            }
+            
+            # Check for common questions for instant response
+            for question, answer in common_questions.get(lang, {}).items():
+                if question in text_lower:
+                    return {"text": answer, "action": None}
+
+            # Normal responses with EXACT facts - optimized for speed
             system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina.
 
-REPLY IN {lang.upper()} ONLY! Be brief (1-3 sentences).
+CRITICAL: REPLY IN {lang.upper()} ONLY! Be VERY brief (1 short sentence max). Direct answers only.
 
-EXACT FACTS:
-APARTMENTS:
-- BOHO: 100m², 10 guests, €500/night, bohemian, terrace with Etna view
-- VINTAGE: 90m², 8 guests, €450/night, baroque, balcony over Isola Bella
-- SHABBY: 90m², 8 guests, €450/night, shabby chic, pastel
+KEY FACTS:
+- LOCATION: Via Nazionale, 20m from Isola Bella beach
+- Mazzarò Beach: 100-150m walking distance (2-3 min walk)
+- Isola Bella: Direct access, 20m
+- APARTMENTS: BOHO 100m² €500, VINTAGE 90m² €450, SHABBY 90m² €450
+- BOOKING: www.cohenhouse.it
 
-LOCATION: Via Nazionale, 20m from Isola Bella
-SUPERMARKET: Below Cohen House
-BOOKING: Save 20-25% at www.cohenhouse.it
-
-NAME:
-- IT: "Mi chiamo Solomon!"
-- EN: "I'm Solomon!"
-"""
+Answer ONLY what's asked. No extra info."""
 
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
@@ -66,13 +85,15 @@ NAME:
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=120,
-                temperature=0.5
+                max_tokens=50,  # Further reduced to 50 for even faster responses
+                temperature=0.9,  # Higher for more direct, natural responses
+                top_p=0.95  # Higher for better quality
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}
 
         except Exception as e:
+            print(f"❌ Assistant error: {e}")
             return {"text": "info@cohenhouse.com", "action": None}
 
 assistant = OpenAIAssistant()

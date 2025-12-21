@@ -8,54 +8,35 @@ env/
 venv/
 .env
 .venv
+
 # IDEs
 .vscode/
 .idea/
 *.swp
 *.swo
+
 # OS
 .DS_Store
 Thumbs.db
-# Project specific
-*.log
-*.db
-*.sqlite3
-node_modules/
-*.cache
-*.pkl
-
-# TTS cache
-tts_*.mp3
-
-# PID files
-server.pid
-
-# Backups
-*.backup
-*.OLD
-*.broken
 
 # Logs
 *.log
 
 # Python cache
-__pycache__
 *.pyc
 
-
 # TTS cache
+tts_*.mp3
 tts_cache/
 *.mp3
 audio_cache/
 
-# Backup files  
-*.backup
-*.OLD
-*.broken
-*~
-
 # Data files
 data/
+*.db
+*.sqlite3
+
+# PID files
 server.pid
 *.pid
 
@@ -63,6 +44,15 @@ server.pid
 *.pkl
 *.dat
 
-# Python cache
-__pycache__/
-*.pyc
+# Node modules
+node_modules/
+*.cache
+
+# Temporary files
+*~
+
+# Keep these backup files (don't ignore them)
+!app/grok_backup.py
+!app/main.py.broken
+!web/index.html.OLD
+!web/index.html.backup
