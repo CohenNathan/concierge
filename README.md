@@ -190,6 +190,10 @@ concierge/
 │   ├── solomon.html              # ✅ Main UI with audio fix
 │   └── avatar.glb                # 3D bear model
 ├── static/                       # Static assets
+├── deploy.sh                     # ✅ SSH deployment script (Linux/macOS)
+├── deploy.bat                    # ✅ SSH deployment script (Windows)
+├── deploy.config.example         # ✅ Deployment configuration template
+├── SSH_DEPLOYMENT_GUIDE.md       # ✅ SSH deployment guide (BG/EN)
 ├── .gitignore                    # ✅ Ignores TTS cache, backups
 ├── package.json                  # Node dependencies
 └── README.md                     # This file
@@ -232,6 +236,26 @@ python test_ring.py
 
 ## 📦 Deployment
 
+### Quick SSH/CLI Deployment (Recommended)
+
+The easiest way to deploy to a remote server via SSH:
+
+```bash
+# 1. Run deployment script
+./deploy.sh
+
+# 2. Edit configuration (first time only)
+nano deploy.config
+# Add your server SSH details
+
+# 3. Deploy!
+./deploy.sh
+```
+
+**Windows users:** Use `deploy.bat` instead
+
+**Full Guide:** See [SSH_DEPLOYMENT_GUIDE.md](SSH_DEPLOYMENT_GUIDE.md) for complete instructions in Bulgarian and English.
+
 ### Production Deployment Checklist
 
 1. **Server Requirements:**
@@ -255,6 +279,8 @@ python test_ring.py
    - Point domain to server IP
    - Configure SSL certificate
    - Update WebSocket URL in `solomon.html`
+
+**Detailed Guide:** See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step production deployment instructions.
 
 ---
 

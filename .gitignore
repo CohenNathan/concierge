@@ -8,6 +8,9 @@ env/
 venv/
 .env
 .venv
+
+# Deployment config
+deploy.config
 # IDEs
 .vscode/
 .idea/

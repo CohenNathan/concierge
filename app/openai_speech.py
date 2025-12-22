@@ -11,16 +11,21 @@ ITALIAN_INDICATORS = [
     'ciao', 'buongiorno', 'buonasera', 'salve', 'buonanotte',
     # Questions
     'dove', 'quanto', 'costa', 'come', 'che', 'cosa', 'quando', 'perché', 'chi',
-    # Common verbs
+    # Common verbs (added more conjugations)
     'sei', 'sono', 'hai', 'ho', 'vuoi', 'voglio', 'posso', 'puoi',
+    'senti', 'sento', 'parli', 'parlo', 'parla', 'parlare', 'capisco', 'capisci',
+    'vai', 'vado', 'vieni', 'vengo', 'fa', 'fare', 'dici', 'dico', 'dire',
     # Common words
-    'grazie', 'prego', 'scusa', 'mi', 'chiamo', 'per', 'con', 'ma', 'e', 'o',
+    'grazie', 'prego', 'scusa', 'mi', 'ti', 'chiamo', 'per', 'con', 'ma', 'e', 'o',
+    'del', 'della', 'di', 'da', 'su', 'in', 'a',
     # Location/apartment related
     'appartamento', 'camera', 'spiaggia', 'mare', 'vicino', 'lontano',
     # Numbers
     'uno', 'due', 'tre', 'quattro', 'cinque',
     # Common phrases
-    'va bene', 'non', 'si', 'no', 'forse', 'anche'
+    'va', 'bene', 'non', 'si', 'sì', 'no', 'forse', 'anche',
+    # Italian specific
+    'italiano', 'italiana', 'inglese'
 ]
 
 # English indicators for contrast
@@ -30,7 +35,9 @@ ENGLISH_INDICATORS = [
     'is', 'are', 'can', 'do', 'does', 'have', 'has', 'want', 'need',
     'the', 'a', 'an', 'this', 'that', 'these', 'those',
     'apartment', 'room', 'beach', 'sea', 'near', 'far',
-    'thank', 'please', 'sorry', 'yes', 'no', 'maybe'
+    'thank', 'please', 'sorry', 'yes', 'no', 'maybe',
+    'you', 'your', 'speak', 'understand', 'tell', 'me', 'my',
+    'english', 'italian', 'language', 'talk', 'say'
 ]
 
 class OpenAISpeech:
@@ -71,7 +78,8 @@ class OpenAISpeech:
                 return None, None
 
             # ⚡ PERFECT LANGUAGE DETECTION: Score-based system for accuracy
-            text_words = text.lower().split()
+            # Remove punctuation from words before matching
+            text_words = re.findall(r'\b\w+\b', text.lower())
             
             # Count matches for each language
             italian_score = sum(1 for word in text_words if word in ITALIAN_INDICATORS)

@@ -1,0 +1,20 @@
+# Cohen House Concierge - Deployment Configuration
+# Конфигурация за качване / Deployment Configuration
+
+# Remote server SSH details / SSH детайли на отдалечен сървър
+REMOTE_USER="your_username"
+REMOTE_HOST="your_server_ip_or_hostname"
+REMOTE_PORT="22"
+REMOTE_PATH="/var/www/concierge"
+
+# SSH Key (optional) / SSH ключ (опционално)
+# Leave empty to use password authentication
+SSH_KEY_PATH=""
+
+# Deployment options / Опции за качване
+DRY_RUN="no"  # Set to "yes" for test run without actual upload
+BACKUP_REMOTE="yes"  # Create backup on remote server before deploying
+RESTART_SERVICE="yes"  # Restart service after deployment
+
+# Service name on remote server (if using systemd)
+SERVICE_NAME="concierge"
