@@ -25,7 +25,7 @@ git pull origin main
 ## 2. Системни изисквания / System Requirements
 
 ### Минимални изисквания / Minimum Requirements:
-- **OS:** Windows 10/11, macOS 10.15+, or Linux (Ubuntu 20.04+)
+- **OS:** Windows 10/11, macOS 12+ (Monterey or later), or Linux (Ubuntu 20.04+)
 - **RAM:** 4 GB minimum, 8 GB recommended
 - **Disk:** 2 GB free space
 - **Internet:** Stable connection for API calls
@@ -90,14 +90,14 @@ pip install -r requirements.txt
 
 **Ако има грешки / If there are errors:**
 ```bash
-# Try installing individually
-pip install fastapi==0.104.1
-pip install uvicorn==0.24.0
-pip install openai==1.3.5
-pip install elevenlabs==0.2.24
+# Try installing individually (versions from requirements.txt)
+pip install fastapi==0.109.0
+pip install uvicorn[standard]==0.27.0
+pip install openai==1.12.0
+pip install elevenlabs==0.2.26
 pip install python-dotenv==1.0.0
-pip install spotipy==2.23.0
-pip install pyautogui==0.9.54
+pip install python-multipart==0.0.6
+pip install websockets==12.0
 ```
 
 ### Стъпка 3: Конфигурирайте .env файла / Configure .env File
