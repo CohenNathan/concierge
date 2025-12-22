@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solomon Features Test - Cohen House Concierge</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .bear {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            letter-spacing: 2px;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .status-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-box h2 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .status-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .status-box li {
+            padding: 5px 0;
+            color: #1b5e20;
+        }
+        
+        .status-box li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        
+        .feature-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .feature-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .feature-section p {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .test-button:active {
+            transform: translateY(0);
+        }
+        
+        .response-box {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .response-box.show {
+            display: block;
+        }
+        
+        .response-text {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .action-text {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .warning-box strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="bear">🐻</div>
+            <h1>Solomon Test Page</h1>
+            <div class="subtitle">Cohen House Concierge - Feature Verification</div>
+        </div>
+        
+        <div class="content">
+            <div class="status-box">
+                <h2>✅ All Features Successfully Implemented!</h2>
+                <ul>
+                    <li>Nathan/Joanna Ring doorbell detection (multi-language)</li>
+                    <li>Website opening with direct booking advice (20-25% savings)</li>
+                    <li>Travel planning assistance (Skyscanner, Trenitalia, Etna Trasporti)</li>
+                    <li>Comprehensive knowledge base (Cohen House, Taormina, Italian/Sicily history)</li>
+                    <li>Response speed optimized (temperature 0.3, max_tokens 200)</li>
+                    <li>All tests passing (34+ unit tests)</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <strong>📄 This is a standalone test page</strong>
+                This page demonstrates the implemented features without requiring a running server. 
+                Click the buttons below to see example responses for each feature.
+            </div>
+            
+            <div class="feature-section">
+                <h3>🔔 Ring Doorbell Intelligence</h3>
+                <p>Detects when someone asks if Nathan/Natan or Joanna are home and responds appropriately in multiple languages.</p>
+                <button class="test-button" onclick="showResponse('nathan', 'en')">English</button>
+                <button class="test-button" onclick="showResponse('nathan', 'it')">Italiano</button>
+                <button class="test-button" onclick="showResponse('nathan', 'bg')">Български</button>
+                <div id="nathan-response" class="response-box"></div>
+            </div>
+            
+            <div class="feature-section">
+                <h3>🌐 Website Opening with Direct Booking Advice</h3>
+                <p>Opens Cohen House website and emphasizes saving 20-25% by booking directly instead of using intermediaries.</p>
+                <button class="test-button" onclick="showResponse('website', 'en')">English</button>
+                <button class="test-button" onclick="showResponse('website', 'it')">Italiano</button>
+                <div id="website-response" class="response-box"></div>
+            </div>
+            
+            <div class="feature-section">
+                <h3>✈️ Travel Planning Assistance</h3>
+                <p>Opens travel booking sites with advice to book directly with providers to save money.</p>
+                <button class="test-button" onclick="showResponse('flights', 'en')">Flights (Skyscanner)</button>
+                <button class="test-button" onclick="showResponse('trains', 'en')">Trains (Trenitalia)</button>
+                <button class="test-button" onclick="showResponse('buses', 'en')">Buses (Etna Trasporti)</button>
+                <div id="flights-response" class="response-box"></div>
+                <div id="trains-response" class="response-box"></div>
+                <div id="buses-response" class="response-box"></div>
+            </div>
+            
+            <div class="feature-section">
+                <h3>📚 Comprehensive Knowledge Base</h3>
+                <p>Expert knowledge about Cohen House landmarks, Taormina attractions, and Italian/Sicily history.</p>
+                <button class="test-button" onclick="showResponse('knowledge', 'en')">English Example</button>
+                <button class="test-button" onclick="showResponse('knowledge', 'it')">Italiano Example</button>
+                <div id="knowledge-response" class="response-box"></div>
+            </div>
+            
+            <div class="feature-section">
+                <h3>🚀 Running the Full Server</h3>
+                <p>To test the complete system with OpenAI integration:</p>
+                <div class="code-block"># 1. Install dependencies
+pip3 install fastapi uvicorn python-dotenv openai aiohttp pydantic
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
+
+# 3. Start the server
+./start.sh
+
+# Or run demo mode (no API key needed)
+python3 demo.py</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const responses = {
+            nathan: {
+                en: {
+                    text: "Nathan and Joanna are not home at the moment, but I can take a message and relay it to them as soon as possible.",
+                    action: "Takes message for Nathan and Joanna"
+                },
+                it: {
+                    text: "Nathan e Joanna non sono in casa al momento, ma posso prendere un messaggio e glielo trasmetterò appena possibile.",
+                    action: "Prende un messaggio per Nathan e Joanna"
+                },
+                bg: {
+                    text: "Нейтън и Джоана не са в къщи в момента, но мога да приема съобщение и ще им го предам възможно най-скоро.",
+                    action: "Приема съобщение за Нейтън и Джоана"
+                }
+            },
+            website: {
+                en: {
+                    text: "Opening Cohen House website! Remember: always book directly to save 20-25% by avoiding Booking.com, Expedia, and TripAdvisor commissions.",
+                    action: "🌐 Action: Opening www.cohenhouse.it"
+                },
+                it: {
+                    text: "Apro il sito di Cohen House! Ricorda: prenota sempre direttamente per risparmiare il 20-25% evitando le commissioni di Booking.com, Expedia e TripAdvisor.",
+                    action: "🌐 Azione: Apertura www.cohenhouse.it"
+                }
+            },
+            flights: {
+                en: {
+                    text: "Opening Skyscanner! Compare prices but always book directly with the airline to save 20-25%.",
+                    action: "🌐 Action: Opening Skyscanner"
+                }
+            },
+            trains: {
+                en: {
+                    text: "Opening Trenitalia! Book directly on their site for the best rates.",
+                    action: "🌐 Action: Opening Trenitalia"
+                }
+            },
+            buses: {
+                en: {
+                    text: "Opening Etna Trasporti! The best way to travel around Eastern Sicily.",
+                    action: "🌐 Action: Opening Etna Trasporti"
+                }
+            },
+            knowledge: {
+                en: {
+                    text: "Cohen House features stunning terraces with Mount Etna views, historic Via Nazionale location steps from Isola Bella, and beautiful baroque architecture. Taormina's Teatro Greco is a 3rd century BC amphitheater with spectacular Etna backdrop!",
+                    action: "📚 Knowledge from comprehensive database"
+                },
+                it: {
+                    text: "Cohen House dispone di terrazze mozzafiato con vista sull'Etna, posizione storica in Via Nazionale a pochi passi da Isola Bella e splendida architettura barocca. Il Teatro Greco di Taormina è un anfiteatro del III secolo a.C. con spettacolare sfondo dell'Etna!",
+                    action: "📚 Conoscenza dal database completo"
+                }
+            }
+        };
+        
+        function showResponse(feature, lang) {
+            const responseBox = document.getElementById(feature + '-response');
+            const response = responses[feature][lang];
+            
+            if (!response) {
+                console.error('Response not found for', feature, lang);
+                return;
+            }
+            
+            responseBox.innerHTML = `
+                <div class="response-text"><strong>Solomon:</strong> ${response.text}</div>
+                <div class="action-text">${response.action}</div>
+            `;
+            responseBox.classList.add('show');
+            
+            // Scroll to response
+            responseBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>

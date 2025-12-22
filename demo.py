@@ -4,9 +4,34 @@ Solomon Demo Mode - Test the system without API keys
 This creates a mock version that demonstrates all features
 """
 
-from fastapi import FastAPI, WebSocket
-from fastapi.responses import HTMLResponse
-import uvicorn
+import sys
+
+# Check dependencies
+try:
+    from fastapi import FastAPI, WebSocket
+    from fastapi.responses import HTMLResponse
+    import uvicorn
+except ImportError as e:
+    print("╔══════════════════════════════════════════════════════════════╗")
+    print("║                    ⚠️  Missing Dependencies                  ║")
+    print("╚══════════════════════════════════════════════════════════════╝")
+    print("")
+    print(f"Error: {e}")
+    print("")
+    print("Please install required packages:")
+    print("")
+    print("  pip3 install fastapi uvicorn")
+    print("")
+    print("Or install all dependencies:")
+    print("")
+    print("  pip3 install fastapi uvicorn python-dotenv openai aiohttp pydantic")
+    print("")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print("")
+    print("💡 Alternative: Open TEST_FEATURES.html directly in your browser")
+    print("   This file works without any dependencies or server!")
+    print("")
+    sys.exit(1)
 
 app = FastAPI(title="Solomon Demo - Cohen House Concierge")
 
@@ -211,6 +236,8 @@ python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000
     """)
 
 if __name__ == "__main__":
+    import sys
+    
     print("╔══════════════════════════════════════════════════════════════╗")
     print("║         Solomon DEMO MODE - Cohen House Concierge           ║")
     print("╚══════════════════════════════════════════════════════════════╝")
@@ -221,4 +248,38 @@ if __name__ == "__main__":
     print("This is a demonstration without API keys.")
     print("For full functionality, configure .env and run: ./start.sh")
     print("")
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    print("⚠️  If you see a blank page:")
+    print("   1. Make sure server is running (you should see logs below)")
+    print("   2. Open: http://localhost:8001 in your browser")
+    print("   3. Check browser console (F12) for errors")
+    print("   4. Or open TEST_FEATURES.html directly (no server needed)")
+    print("")
+    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    print("")
+    
+    try:
+        uvicorn.run(app, host="0.0.0.0", port=8001, log_level="info")
+    except OSError as e:
+        if "Address already in use" in str(e):
+            print("")
+            print("❌ Error: Port 8001 is already in use!")
+            print("")
+            print("Solutions:")
+            print("1. Stop the other process:")
+            print("   lsof -ti:8001 | xargs kill -9")
+            print("")
+            print("2. Or use a different port:")
+            print("   python3 -c 'from demo import app; import uvicorn; uvicorn.run(app, port=8002)'")
+            print("   Then open: http://localhost:8002")
+            sys.exit(1)
+        else:
+            print(f"❌ Error starting server: {e}")
+            sys.exit(1)
+    except KeyboardInterrupt:
+        print("\n\n🛑 Server stopped by user")
+        sys.exit(0)
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
