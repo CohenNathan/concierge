@@ -15,28 +15,30 @@ class OpenAIAssistant:
         try:
             text_lower = text.lower()
 
-            # MUSIC TRIGGER with 3 options
+            # MUSIC TRIGGER with 3 options - DRAMATIC and COMMANDING tone
             if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
-                # Traditional
+                # Traditional - EPIC and POWERFUL
                 if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
                     phrases = [
-                        "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
+                        "Orchestra! L'aria diventa fuoco! SUONATE! PIZZICA DI SAN VITO!",
+                        "Soldiers of Salento, ARISE! The drums call you to destiny! PIZZICA!",
+                        "Warriors! The ancient rhythm COMMANDS you! Into battle! PIZZICA DI SAN VITO!"
                     ]
                     return {"text": random.choice(phrases), "action": "play_pizzica"}
 
-                # Fun
+                # Fun - Still COMMANDING but with energy
                 if any(k in text_lower for k in ['divertente', 'fun', 'bambole', 'allegra']):
                     phrases = [
-                        "Chaos incoming! VOGLIAMO LE BAMBOLE!",
-                        "Madness begins... Vogliamo le bambole!"
+                        "CHARGE! The madness begins! VOGLIAMO LE BAMBOLE!",
+                        "Storm the gates! Nothing stops us! VOGLIAMO LE BAMBOLE!",
+                        "FORWARD! Chaos is our ally! Vogliamo le bambole!"
                     ]
                     return {"text": random.choice(phrases), "action": "play_bambole"}
 
-                # Default – ask and open Spotify
+                # Default – COMMANDING tone
                 phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
+                    "Orchestra stands ready! Choose your weapon: Traditional war drums, explosive chaos, or command Spotify yourself!",
+                    "The battle awaits! Declare your music: Pizzica warriors, bambole madness, or take the Spotify throne!"
                 ]
                 return {"text": random.choice(phrases), "action": "open_spotify"}
 
