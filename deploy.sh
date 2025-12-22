@@ -109,19 +109,31 @@ else
     exit 1
 fi
 
-# Run local diagnostic test
-print_info "Running local diagnostic tests..."
-if python3 diagnostic_test.py > /dev/null 2>&1; then
-    print_success "Local diagnostic tests passed"
+# Run local diagnostic test if available
+if [ -f "diagnostic_test.py" ]; then
+    print_info "Running local diagnostic tests..."
+    if python3 diagnostic_test.py > /dev/null 2>&1; then
+        print_success "Local diagnostic tests passed"
+    else
+        print_warning "Some diagnostic tests failed (this is OK if .env is not configured)"
+    fi
 else
-    print_warning "Some diagnostic tests failed (this is OK if .env is not configured)"
+    print_warning "diagnostic_test.py not found, skipping local tests"
 fi
 
 # Create backup on remote server if requested
+create_remote_backup() {
+    local backup_name="concierge_backup_$(date +%Y%m%d_%H%M%S)"
+    ssh $SSH_OPTS "$REMOTE_USER@$REMOTE_HOST" "if [ -d $REMOTE_PATH ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_${backup_name} && echo 'Backup created'; else echo 'No existing directory to backup'; fi" 2>/dev/null || {
+        print_warning "Could not create backup (this is OK for first deployment)"
+        return 0
+    }
+    echo "$backup_name"
+}
+
 if [ "$BACKUP_REMOTE" = "yes" ]; then
     print_info "Creating backup on remote server..."
-    BACKUP_NAME="concierge_backup_$(date +%Y%m%d_%H%M%S)"
-    ssh $SSH_OPTS "$REMOTE_USER@$REMOTE_HOST" "if [ -d $REMOTE_PATH ]; then cp -r $REMOTE_PATH ${REMOTE_PATH}_$BACKUP_NAME; echo 'Backup created'; fi" || true
+    BACKUP_NAME=$(create_remote_backup)
     print_success "Remote backup created: ${REMOTE_PATH}_${BACKUP_NAME}"
 fi
 

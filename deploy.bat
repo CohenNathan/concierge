@@ -103,16 +103,31 @@ echo.
 
 bash -c "rsync -avz --progress ^
     --exclude='.git' ^
+    --exclude='.gitignore' ^
     --exclude='__pycache__' ^
     --exclude='*.pyc' ^
+    --exclude='*.pyo' ^
     --exclude='.env' ^
     --exclude='venv' ^
     --exclude='env' ^
+    --exclude='.venv' ^
     --exclude='node_modules' ^
     --exclude='*.log' ^
     --exclude='*.pid' ^
+    --exclude='*.db' ^
+    --exclude='*.sqlite3' ^
+    --exclude='tts_*.mp3' ^
     --exclude='audio_cache' ^
     --exclude='*.backup' ^
+    --exclude='*.OLD' ^
+    --exclude='*.broken' ^
+    --exclude='.DS_Store' ^
+    --exclude='*.swp' ^
+    --exclude='*.swo' ^
+    --exclude='.vscode' ^
+    --exclude='.idea' ^
+    --exclude='*.pkl' ^
+    --exclude='*.dat' ^
     -e 'ssh -p %REMOTE_PORT%' ^
     ./ %REMOTE_USER%@%REMOTE_HOST%:%REMOTE_PATH%/"
 
