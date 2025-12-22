@@ -65,7 +65,9 @@ class OpenAIAssistant:
                 if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
                     phrases = [
                         "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
+                        "Salento spirit rising... Orchestra – PIZZICA!",
+                        "Orchestra! L'aria diventa fuoco! Suonate! Come l'ultima battaglia! Un respiro - una volontà - nessuna pietà! FIRE! 🔥",
+                        "Orchestra! Turn the air to fire! Play! Like it's the final battle! One breath - one will - no mercy! FIRE! 🔥"
                     ]
                     return {"text": random.choice(phrases), "action": "play_pizzica"}
 
@@ -80,7 +82,9 @@ class OpenAIAssistant:
                 # Default – ask and open Spotify
                 phrases = [
                     "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
+                    "The stage is set. Tell me your mood – opening Spotify for you.",
+                    "Orchestra! L'aria diventa fuoco! Suonate! Come l'ultima battaglia! Un respiro - una volontà - nessuna pietà! FIRE! 🔥",
+                    "Orchestra! Turn the air to fire! Play! Like it's the final battle! One breath - one will - no mercy! FIRE! 🔥"
                 ]
                 return {"text": random.choice(phrases), "action": "open_spotify"}
 
