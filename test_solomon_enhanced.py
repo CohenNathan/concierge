@@ -159,7 +159,9 @@ def test_system_prompt_content():
     print("="*60)
     
     # Read the openai_assistant.py file
-    with open('/home/runner/work/concierge/concierge/app/openai_assistant.py', 'r') as f:
+    import os
+    file_path = os.path.join(os.path.dirname(__file__), 'app', 'openai_assistant.py')
+    with open(file_path, 'r') as f:
         content = f.read()
     
     required_content = [
