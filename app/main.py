@@ -41,10 +41,14 @@ async def websocket_endpoint(websocket: WebSocket):
             
             # Handle actions
             action = response.get("action")
-            if action == "play_music":
+            if action == "play_pizzica":
                 spotify.play_pizzica_di_san_vito()
-            elif action == "play_fun_music":
+            elif action == "play_bambole":
                 spotify.play_fun_song()
+            elif action == "play_seria":
+                spotify.play_seria_music()
+            elif action == "play_romantica":
+                spotify.play_romantica_music()
             elif action == "open_spotify":
                 spotify.open_spotify()
             elif action == "open_etna":

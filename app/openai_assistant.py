@@ -59,8 +59,26 @@ class OpenAIAssistant:
                 }
                 return {"text": responses.get(lang, responses['en']), "action": "open_etna"}
 
-            # MUSIC TRIGGER with 3 options
+            # MUSIC TRIGGER with multiple options
             if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
+                # Serious/Political Music
+                if any(k in text_lower for k in ['seria', 'serio', 'serious', 'politica', 'political', 'політична']):
+                    phrases = [
+                        "Attivando musica seria... La riflessione profonda inizia.",
+                        "Serious music activated... Deep reflection begins.",
+                        "Orchestra! Pensieri profondi in melodia. SERIA! 🎼"
+                    ]
+                    return {"text": random.choice(phrases), "action": "play_seria"}
+                
+                # Romantic Music
+                if any(k in text_lower for k in ['romantica', 'romantico', 'romantic', 'romance', 'amore', 'love']):
+                    phrases = [
+                        "Musica romantica... L'amore nell'aria! ❤️",
+                        "Romantic music... Love is in the air! ❤️",
+                        "Orchestra! Il cuore canta. ROMANTICA! ❤️🎵"
+                    ]
+                    return {"text": random.choice(phrases), "action": "play_romantica"}
+                
                 # Traditional
                 if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
                     phrases = [
@@ -81,7 +99,7 @@ class OpenAIAssistant:
 
                 # Default – ask and open Spotify
                 phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
+                    "Orchestra awaits your command. What kind of music? Traditional, fun, romantic, serious, or your choice on Spotify?",
                     "The stage is set. Tell me your mood – opening Spotify for you.",
                     "Orchestra! L'aria diventa fuoco! Suonate! Come l'ultima battaglia! Un respiro - una volontà - nessuna pietà! FIRE! 🔥",
                     "Orchestra! Turn the air to fire! Play! Like it's the final battle! One breath - one will - no mercy! FIRE! 🔥"
