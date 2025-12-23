@@ -5,6 +5,9 @@ import random
 
 load_dotenv()
 
+# Dramatic phrase for music playback
+MUSIC_FIRE_PHRASE = "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!"
+
 class OpenAIAssistant:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -38,28 +41,28 @@ class OpenAIAssistant:
                 # Traditional
                 if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
                     return {
-                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "text": MUSIC_FIRE_PHRASE,
                         "action": "play_pizzica"
                     }
                 
                 # Fun
                 elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
                     return {
-                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "text": MUSIC_FIRE_PHRASE,
                         "action": "play_fun"
                     }
                 
                 # Political
                 elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
                     return {
-                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "text": MUSIC_FIRE_PHRASE,
                         "action": "play_political"
                     }
                 
                 # Love
                 elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
                     return {
-                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "text": MUSIC_FIRE_PHRASE,
                         "action": "play_love"
                     }
 
