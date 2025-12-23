@@ -16,7 +16,7 @@ else:
 VOICE_ID = "RxJZoVFTFvDcilRItefF"  # Original bear voice
 
 async def text_to_speech(text: str, lang: str = "it") -> str:
-    """Generate TTS with original bear voice"""
+    """Generate TTS with original bear voice - optimized for speed"""
     if not ELEVENLABS_API_KEY or not text or len(text) < 2:
         return None
    
@@ -34,7 +34,7 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         preview = text[:50] + "..." if len(text) > 50 else text
         print(f"🎤 Generating TTS [{lang}]: {preview}")
        
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(15.0)) as client:  # Reduced timeout
             response = await client.post(
                 url,
                 headers={
@@ -43,14 +43,14 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
                 },
                 json={
                     "text": text,
-                    "model_id": "eleven_multilingual_v2",
+                    "model_id": "eleven_turbo_v2",  # Changed to turbo model for speed
                     "voice_settings": {
-                        "stability": 0.9,
-                        "similarity_boost": 0.95,
-                        "style": 0.5
-                    }
-                },
-                timeout=30.0
+                        "stability": 0.7,  # Reduced for faster generation
+                        "similarity_boost": 0.8,  # Reduced for faster generation
+                        "style": 0.3  # Reduced for faster generation
+                    },
+                    "optimize_streaming_latency": 3  # Added for faster response
+                }
             )
            
             print(f"📡 TTS response: {response.status_code}")
