@@ -9,79 +9,74 @@ class OpenAIAssistant:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
         self.client = AsyncOpenAI(api_key=api_key)
+        self.awaiting_music_choice = False
         print("✅ Solomon ready")
 
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
             text_lower = text.lower()
 
-            # MUSIC TRIGGER with 3 options
-            if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
+            # MUSIC REQUEST - Ask what type
+            music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti']
+            if any(w in text_lower for w in music_words) and not self.awaiting_music_choice:
+                self.awaiting_music_choice = True
+                if lang == 'it':
+                    return {
+                        "text": "Che tipo di musica? Tradizionale, Divertente, Politica, o Amore?",
+                        "action": None
+                    }
+                else:
+                    return {
+                        "text": "What kind of music? Traditional, Fun, Political, or Love?",
+                        "action": None
+                    }
+
+            # MUSIC CHOICE
+            if self.awaiting_music_choice:
+                self.awaiting_music_choice = False
+                
                 # Traditional
-                if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
-                    phrases = [
-                        "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_pizzica"}
-
+                if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
+                    return {
+                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "action": "play_pizzica"
+                    }
+                
                 # Fun
-                if any(k in text_lower for k in ['divertente', 'fun', 'bambole', 'allegra']):
-                    phrases = [
-                        "Chaos incoming! VOGLIAMO LE BAMBOLE!",
-                        "Madness begins... Vogliamo le bambole!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_bambole"}
+                elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
+                    return {
+                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "action": "play_fun"
+                    }
+                
+                # Political
+                elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
+                    return {
+                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "action": "play_political"
+                    }
+                
+                # Love
+                elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
+                    return {
+                        "text": "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!",
+                        "action": "play_love"
+                    }
 
-                # Default – ask and open Spotify
-                phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
-                ]
-                return {"text": random.choice(phrases), "action": "open_spotify"}
+            # Normal conversation
+            system = f"""You are Solomon, bear concierge at Cohen House Taormina.
+Reply in {lang.upper()} only. 1-3 sentences.
 
-            # ⚡ ACCURATE INFORMATION: Enhanced system prompt with strict facts
-            system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina, Sicily.
+APARTMENTS:
+- BOHO: 100m², 10 guests, €500/night
+- VINTAGE: 90m², 8 guests, €450/night
+- SHABBY: 90m², 8 guests, €450/night
 
-CRITICAL: REPLY IN {lang.upper()} ONLY! Be brief and ACCURATE (1-3 sentences).
+Location: Via Nazionale, 20m from Isola Bella
+Supermarket below
+Save 20%: www.cohenhouse.it
 
-EXACT APARTMENT FACTS (memorize these numbers):
-BOHO:
-- Size: EXACTLY 100 square meters
-- Guests: MAXIMUM 10 people
-- Price: EXACTLY €500 per night
-- Style: Bohemian design
-- Special: Private terrace with Mount Etna view
-
-VINTAGE:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Baroque elegance
-- Special: Balcony overlooking Isola Bella beach
-
-SHABBY:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Shabby chic with pastel colors
-- Special: Charming coastal atmosphere
-
-LOCATION FACTS:
-- Address: Via Nazionale, Taormina, Sicily, Italy
-- Beach: EXACTLY 20 meters from Isola Bella beach
-- Supermarket: Located below Cohen House building
-- Town center: 5-minute walk
-
-BOOKING INFORMATION:
-- Website: www.cohenhouse.it
-- Direct booking discount: 20-25% savings vs booking platforms
-- Contact: info@cohenhouse.com
-
-IDENTITY:
-- Name: Solomon (magical AI bear)
-- Role: 24/7 AI concierge assistant
-- Languages: Italian and English
+Name: "Solomon" / "Mi chiamo Solomon"
 """
 
             # ⚡ SPEED + ACCURACY: Optimized parameters
@@ -92,8 +87,7 @@ IDENTITY:
                     {"role": "user", "content": text}
                 ],
                 max_tokens=80,
-                temperature=0.2,  # ⚡ Further reduced to 0.2 for maximum accuracy
-                top_p=0.9  # ⚡ Added for more focused responses
+                temperature=0.7
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}

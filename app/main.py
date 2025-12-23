@@ -53,6 +53,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 "play_pizzica": spotify.play_pizzica_di_san_vito,
                 "play_fun_music": spotify.play_fun_song,
                 "play_bambole": spotify.play_fun_song,
+                "play_fun": spotify.play_fun_song,
+                "play_political": spotify.play_political_song,
+                "play_love": spotify.play_love_song,
                 "open_spotify": spotify.open_spotify
             }
             
