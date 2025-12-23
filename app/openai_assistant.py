@@ -17,11 +17,11 @@ class OpenAIAssistant:
 
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
-            # Handle null/empty text
-            if not text:
+            # ⚡ SPEED: Handle null/empty text immediately
+            if not text or len(text.strip()) < 2:
                 return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
             
-            text_lower = text.lower()
+            text_lower = text.lower().strip()
 
             # Check if user specified music type directly (either initially or in response to question)
             music_type_found = None
@@ -70,13 +70,12 @@ class OpenAIAssistant:
                 self.awaiting_music_choice = False
                 # No type specified after asking, fall through to normal conversation
 
-            # Normal conversation
-            language_instructions = {
-                'it': 'Rispondi sempre in ITALIANO. Sei fluente in italiano e inglese, ma il cliente parla italiano quindi rispondi in italiano.',
-                'en': 'Always reply in ENGLISH. You are fluent in Italian and English, but the guest is speaking English so reply in English.'
-            }
-            
-            lang_instruction = language_instructions.get(lang, language_instructions['it'])
+            # ⚡ SPEED: Use language-specific prompts for faster, more accurate responses
+            # Shorter system prompt = faster API processing + lower costs
+            if lang == 'en':
+                lang_instruction = 'Reply ONLY in English. Guest speaks English.'
+            else:
+                lang_instruction = 'Rispondi SOLO in italiano. Cliente parla italiano.'
             
             system = f"""You are Solomon, a professional AI bear concierge at Cohen House Taormina, Sicily.
 
@@ -241,15 +240,16 @@ Cable Car (Funivia):
 Your identity: Solomon the Bear / Mi chiamo Solomon
 """
 
-            # ⚡ SPEED + ACCURACY: Optimized parameters
+            # ⚡⚡⚡ ULTRA-FAST: Optimized for speed + accuracy
             response = await self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o-mini",  # Fastest GPT-4 model
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=250,  # Increased for detailed professional responses
-                temperature=0.7
+                max_tokens=200,  # Balanced: Detailed but fast (reduced from 250)
+                temperature=0.6,  # Lower = faster + more consistent
+                stream=False  # Non-streaming for simplicity
             )
 
             return {"text": response.choices[0].message.content.strip(), "action": None}
