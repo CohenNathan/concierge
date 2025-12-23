@@ -27,19 +27,19 @@ class OpenAIAssistant:
             music_type_found = None
             
             # Traditional
-            if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella', 'традиционна', 'традиционен']):
+            if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
                 music_type_found = "play_pizzica"
             
             # Fun
-            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra', 'забавна', 'забавен']):
+            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
                 music_type_found = "play_fun"
             
             # Political
-            elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija', 'политическа', 'политически']):
+            elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
                 music_type_found = "play_political"
             
             # Love / Romantic
-            elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino', 'романтична', 'романтичен', 'любовна', 'любовен']):
+            elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
                 music_type_found = "play_love"
             
             # If music type was specified, play it directly
@@ -51,17 +51,12 @@ class OpenAIAssistant:
                 }
             
             # MUSIC REQUEST without type specified - Ask what type
-            music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti', 'музика', 'песен']
+            music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti']
             if any(w in text_lower for w in music_words) and not self.awaiting_music_choice:
                 self.awaiting_music_choice = True
                 if lang == 'it':
                     return {
                         "text": "Che tipo di musica? Tradizionale, Divertente, Politica, o Amore?",
-                        "action": None
-                    }
-                elif lang == 'bg':
-                    return {
-                        "text": "Какъв тип музика? Традиционна, Забавна, Политическа, или Романтична?",
                         "action": None
                     }
                 else:
@@ -77,9 +72,8 @@ class OpenAIAssistant:
 
             # Normal conversation
             language_instructions = {
-                'it': 'Rispondi sempre in ITALIANO. Sei fluente in italiano, inglese e bulgaro, ma il cliente parla italiano quindi rispondi in italiano.',
-                'en': 'Always reply in ENGLISH. You are fluent in Italian, English and Bulgarian, but the guest is speaking English so reply in English.',
-                'bg': 'Винаги отговаряй на БЪЛГАРСКИ (Български език). Владееш свободно италиански, английски и български, но гостът говори български, затова отговаряй на български.'
+                'it': 'Rispondi sempre in ITALIANO. Sei fluente in italiano e inglese, ma il cliente parla italiano quindi rispondi in italiano.',
+                'en': 'Always reply in ENGLISH. You are fluent in Italian and English, but the guest is speaking English so reply in English.'
             }
             
             lang_instruction = language_instructions.get(lang, language_instructions['it'])
@@ -106,7 +100,7 @@ AMENITIES:
 - 5-minute walk to Taormina town center
 - Prime beachfront location
 
-Your identity: Solomon the Bear / Mi chiamo Solomon / Аз съм Соломон
+Your identity: Solomon the Bear / Mi chiamo Solomon
 """
 
             # ⚡ SPEED + ACCURACY: Optimized parameters
