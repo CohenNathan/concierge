@@ -1,7 +1,6 @@
 from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
-import random
 
 load_dotenv()
 
@@ -15,49 +14,56 @@ class OpenAIAssistant:
         try:
             text_lower = text.lower()
 
-            # MUSIC TRIGGER with 3 options
-            if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
-                # Traditional
-                if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
-                    phrases = [
-                        "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_pizzica"}
+            # Check for music type keywords FIRST
+            if any(k in text_lower for k in ['traditional', 'tradizionale', 'pizzica']):
+                return {
+                    "text": "Orchestra... turn silence into fire. One breath, one will - no mercy. FIRE!",
+                    "action": "play_pizzica"
+                }
+            
+            if any(k in text_lower for k in ['fun', 'divertente', 'funny', 'bambole']):
+                return {
+                    "text": "Orchestra... turn silence into fire. One breath, one will - no mercy. FIRE!",
+                    "action": "play_fun"
+                }
+            
+            if any(k in text_lower for k in ['political', 'politica', 'marinno']):
+                return {
+                    "text": "Orchestra... turn silence into fire. One breath, one will - no mercy. FIRE!",
+                    "action": "play_political"
+                }
+            
+            if any(k in text_lower for k in ['love', 'amore', 'romantic', 'mannarino']):
+                return {
+                    "text": "Orchestra... turn silence into fire. One breath, one will - no mercy. FIRE!",
+                    "action": "play_love"
+                }
 
-                # Fun
-                if any(k in text_lower for k in ['divertente', 'fun', 'bambole', 'allegra']):
-                    phrases = [
-                        "Chaos incoming! VOGLIAMO LE BAMBOLE!",
-                        "Madness begins... Vogliamo le bambole!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_bambole"}
+            # Generic music request - ask for type
+            if any(k in text_lower for k in ['music', 'musica', 'song', 'canzone']):
+                if lang == 'it':
+                    return {
+                        "text": "Che musica? Tradizionale, Divertente, Politica, o Amore?",
+                        "action": None
+                    }
+                else:
+                    return {
+                        "text": "What music? Traditional, Fun, Political, or Love?",
+                        "action": None
+                    }
 
-                # Default – ask and open Spotify
-                phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
-                ]
-                return {"text": random.choice(phrases), "action": "open_spotify"}
+            # Normal conversation
+            system = f"""You are Solomon, bear concierge at Cohen House.
+Reply in {lang.upper()} only. 1-2 sentences max.
 
-            # Normal responses with EXACT facts
-            system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina.
+BOHO: 100m², €500/night
+VINTAGE: 90m², €450/night
+SHABBY: 90m², €450/night
 
-REPLY IN {lang.upper()} ONLY! Be brief (1-3 sentences).
+Via Nazionale, 20m from Isola Bella
+www.cohenhouse.it
 
-EXACT FACTS:
-APARTMENTS:
-- BOHO: 100m², 10 guests, €500/night, bohemian, terrace with Etna view
-- VINTAGE: 90m², 8 guests, €450/night, baroque, balcony over Isola Bella
-- SHABBY: 90m², 8 guests, €450/night, shabby chic, pastel
-
-LOCATION: Via Nazionale, 20m from Isola Bella
-SUPERMARKET: Below Cohen House
-BOOKING: Save 20-25% at www.cohenhouse.it
-
-NAME:
-- IT: "Mi chiamo Solomon!"
-- EN: "I'm Solomon!"
+Name: "Solomon"
 """
 
             response = await self.client.chat.completions.create(
@@ -66,12 +72,12 @@ NAME:
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=120,
-                temperature=0.5
+                max_tokens=60,
+                temperature=0.7
             )
-
+            
             return {"text": response.choices[0].message.content.strip(), "action": None}
-
+            
         except Exception as e:
             return {"text": "info@cohenhouse.com", "action": None}
 
