@@ -19,7 +19,34 @@ class OpenAIAssistant:
         try:
             text_lower = text.lower()
 
-            # MUSIC REQUEST - Ask what type
+            # Check if user specified music type directly (either initially or in response to question)
+            music_type_found = None
+            
+            # Traditional
+            if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
+                music_type_found = "play_pizzica"
+            
+            # Fun
+            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
+                music_type_found = "play_fun"
+            
+            # Political
+            elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
+                music_type_found = "play_political"
+            
+            # Love / Romantic
+            elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
+                music_type_found = "play_love"
+            
+            # If music type was specified, play it directly
+            if music_type_found:
+                self.awaiting_music_choice = False
+                return {
+                    "text": MUSIC_FIRE_PHRASE,
+                    "action": music_type_found
+                }
+            
+            # MUSIC REQUEST without type specified - Ask what type
             music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti']
             if any(w in text_lower for w in music_words) and not self.awaiting_music_choice:
                 self.awaiting_music_choice = True
@@ -34,37 +61,10 @@ class OpenAIAssistant:
                         "action": None
                     }
 
-            # MUSIC CHOICE
+            # MUSIC CHOICE - If awaiting response to our question, reset state
             if self.awaiting_music_choice:
                 self.awaiting_music_choice = False
-                
-                # Traditional
-                if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
-                    return {
-                        "text": MUSIC_FIRE_PHRASE,
-                        "action": "play_pizzica"
-                    }
-                
-                # Fun
-                elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
-                    return {
-                        "text": MUSIC_FIRE_PHRASE,
-                        "action": "play_fun"
-                    }
-                
-                # Political
-                elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
-                    return {
-                        "text": MUSIC_FIRE_PHRASE,
-                        "action": "play_political"
-                    }
-                
-                # Love
-                elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
-                    return {
-                        "text": MUSIC_FIRE_PHRASE,
-                        "action": "play_love"
-                    }
+                # No type specified after asking, fall through to normal conversation
 
             # Normal conversation
             system = f"""You are Solomon, bear concierge at Cohen House Taormina.
