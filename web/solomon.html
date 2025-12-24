@@ -224,11 +224,22 @@
 
         const loader = new GLTFLoader();
         let avatar;
-        loader.load('/avatar.glb', (gltf) => {
-            avatar = gltf.scene;
-            avatar.scale.set(2, 2, 2);
-            scene.add(avatar);
-        });
+        loader.load('/avatar.glb', 
+            (gltf) => {
+                avatar = gltf.scene;
+                avatar.scale.set(2, 2, 2);
+                avatar.position.set(0, -1, 0);
+                scene.add(avatar);
+                console.log('✅ Bear avatar loaded successfully');
+            },
+            (progress) => {
+                console.log('Loading avatar:', (progress.loaded / progress.total * 100).toFixed(2) + '%');
+            },
+            (error) => {
+                console.error('❌ Error loading avatar:', error);
+                updateStatus('❌ Avatar failed to load');
+            }
+        );
 
         camera.position.z = 5;
 
