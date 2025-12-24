@@ -40,16 +40,16 @@ def test_server_running():
     try:
         response = requests.get("http://127.0.0.1:8000/docs", timeout=5)
         if response.status_code == 200:
-            print_test("✅ Uvicorn started on http://127.0.0.1:8000", "pass")
-            print_test("✅ No traceback - server is healthy", "pass")
-            print_test("✅ All dependencies installed successfully", "pass")
-            print_test("✅ Virtual environment working correctly", "pass")
+            print_test("Uvicorn started on http://127.0.0.1:8000", "pass")
+            print_test("No traceback - server is healthy", "pass")
+            print_test("All dependencies installed successfully", "pass")
+            print_test("Virtual environment working correctly", "pass")
             return True
         else:
             print_test(f"❌ Server returned status {response.status_code}", "fail")
             return False
     except requests.exceptions.ConnectionError:
-        print_test("❌ Server is not running on http://127.0.0.1:8000", "fail")
+        print_test("Server is not running on http://127.0.0.1:8000", "fail")
         return False
     except Exception as e:
         print_test(f"❌ Error connecting to server: {e}", "fail")
@@ -63,7 +63,7 @@ def test_swagger_docs():
         # Test /docs page
         response = requests.get("http://127.0.0.1:8000/docs", timeout=5)
         if response.status_code == 200:
-            print_test("✅ /docs page opens successfully in browser", "pass")
+            print_test("/docs page opens successfully in browser", "pass")
         else:
             print_test(f"❌ /docs returned status {response.status_code}", "fail")
             return False
@@ -82,7 +82,7 @@ def test_swagger_docs():
             
             return True
         else:
-            print_test("❌ Could not fetch OpenAPI schema", "fail")
+            print_test("Could not fetch OpenAPI schema", "fail")
             return False
             
     except Exception as e:
@@ -101,9 +101,9 @@ def test_endpoints():
         response = requests.get("http://127.0.0.1:8000/", timeout=5)
         if response.status_code == 200:
             if "Cohen Smart House" in response.text:
-                print_test("✅ GET / returns 200 OK with solomon.html", "pass")
+                print_test("GET / returns 200 OK with solomon.html", "pass")
             else:
-                print_test("⚠️  GET / returns 200 but unexpected content", "warn")
+                print_test("GET / returns 200 but unexpected content", "warn")
         else:
             print_test(f"⚠️  GET / returned status {response.status_code}", "warn")
     except Exception as e:
@@ -116,7 +116,7 @@ def test_endpoints():
         # This will fail without actual file, but we check if endpoint exists
         response = requests.post("http://127.0.0.1:8000/upload-audio", timeout=5)
         if response.status_code in [422, 400]:  # Expected validation error
-            print_test("✅ POST /upload-audio endpoint exists (422 validation error expected)", "pass")
+            print_test("POST /upload-audio endpoint exists (422 validation error expected)", "pass")
         else:
             print_test(f"ℹ️  POST /upload-audio returned {response.status_code}", "info")
     except Exception as e:
@@ -132,9 +132,9 @@ def test_endpoints():
         if response.status_code == 200:
             result = response.json()
             if "status" in result:
-                print_test("✅ POST /ring/webhook returns 200 OK", "pass")
+                print_test("POST /ring/webhook returns 200 OK", "pass")
             else:
-                print_test("⚠️  POST /ring/webhook response unexpected", "warn")
+                print_test("POST /ring/webhook response unexpected", "warn")
         else:
             print_test(f"⚠️  POST /ring/webhook returned {response.status_code}", "warn")
     except Exception as e:
@@ -150,7 +150,7 @@ def test_frontend_structure():
     solomon_html = Path("web/solomon.html")
     
     if not solomon_html.exists():
-        print_test("❌ web/solomon.html not found", "fail")
+        print_test("web/solomon.html not found", "fail")
         return False
     
     content = solomon_html.read_text()
@@ -166,9 +166,9 @@ def test_frontend_structure():
     all_pass = True
     for check_str, description in checks:
         if check_str in content:
-            print_test(f"✅ {description}", "pass")
+            print_test(f"{description}", "pass")
         else:
-            print_test(f"⚠️  {description} - NOT FOUND", "warn")
+            print_test(f"{description} - NOT FOUND", "warn")
             all_pass = False
     
     print("\n   ℹ️  Note: Full microphone testing requires browser interaction")
@@ -180,7 +180,7 @@ def test_query_processing():
     """Test 5: Query Recognition and Processing (Structure Check)"""
     print_header("TEST 5: Query Recognition & Processing (Разпознаване на заявки)")
     
-    print_test("ℹ️  Checking backend structure for query processing...", "info")
+    print_test("Checking backend structure for query processing...", "info")
     
     # Check for required modules
     modules_to_check = [
@@ -207,9 +207,9 @@ def test_query_processing():
             # FastAPI OpenAPI doesn't show WebSocket endpoints, but we can check the code
             main_py = Path("app/main.py").read_text()
             if "@app.websocket(" in main_py:
-                print_test("✅ WebSocket endpoint configured for real-time queries", "pass")
+                print_test("WebSocket endpoint configured for real-time queries", "pass")
             else:
-                print_test("⚠️  WebSocket endpoint not found in code", "warn")
+                print_test("WebSocket endpoint not found in code", "warn")
     except Exception as e:
         print_test(f"⚠️  Could not verify WebSocket: {e}", "warn")
     
@@ -240,8 +240,8 @@ def test_face_recognition():
             print_test(f"✅ Face recognition module found: {module}", "pass")
     
     if not face_module_found:
-        print_test("ℹ️  Face recognition modules not found", "info")
-        print_test("ℹ️  Face recognition may be optional/disabled", "info")
+        print_test("Face recognition modules not found", "info")
+        print_test("Face recognition may be optional/disabled", "info")
         return True
     
     # Check endpoint
@@ -250,7 +250,7 @@ def test_face_recognition():
                                 json={"image": "test"},
                                 timeout=5)
         if response.status_code in [200, 400, 422]:
-            print_test("✅ POST /recognize-face endpoint exists", "pass")
+            print_test("POST /recognize-face endpoint exists", "pass")
         else:
             print_test(f"⚠️  Face recognition endpoint returned {response.status_code}", "warn")
     except Exception as e:
@@ -268,7 +268,7 @@ def test_api_keys():
     # Check .env file
     env_file = Path(".env")
     if env_file.exists():
-        print_test("✅ .env file exists", "pass")
+        print_test(".env file exists", "pass")
         
         env_content = env_file.read_text()
         
@@ -301,8 +301,8 @@ def test_api_keys():
             else:
                 print_test(f"ℹ️  {description} not configured (optional)", "info")
     else:
-        print_test("❌ .env file not found", "fail")
-        print_test("ℹ️  Create .env from .env.example", "info")
+        print_test(".env file not found", "fail")
+        print_test("Create .env from .env.example", "info")
         return False
     
     print("\n   ℹ️  To use real services, replace mock keys with actual API keys:")
