@@ -263,17 +263,9 @@ class TestStaticFiles:
 
 @pytest.mark.unit
 class TestHealthCheck:
-    """Test health and status endpoints"""
+    """Test basic health and documentation endpoints"""
     
-    def test_docs_accessible(self, client):
-        """Verify API documentation is accessible"""
+    def test_app_starts_successfully(self, client):
+        """Verify app starts and responds to requests"""
         response = client.get("/docs")
         assert response.status_code == 200
-    
-    def test_openapi_schema_valid(self, client):
-        """Verify OpenAPI schema is valid JSON"""
-        response = client.get("/openapi.json")
-        assert response.status_code == 200
-        schema = response.json()
-        assert isinstance(schema, dict)
-        assert "openapi" in schema

@@ -10,7 +10,6 @@ httpx==0.26.0  # Already in main requirements, needed for AsyncClient
 
 # Mocking External APIs
 respx==0.20.2
-responses==0.24.1
 
 # Additional Testing Utilities
 pytest-mock==3.12.0
