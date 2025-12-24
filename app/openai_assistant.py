@@ -1,7 +1,6 @@
 from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
-import random
 
 load_dotenv()
 
@@ -17,7 +16,7 @@ class OpenAIAssistant:
 
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
-            # ⚡ SPEED: Handle null/empty text immediately
+            # Handle null/empty text
             if not text:
                 return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
             
@@ -27,26 +26,26 @@ class OpenAIAssistant:
             
             text_lower = text.lower()
 
-            # Check if user specified music type directly (either initially or in response to question)
+            # MUSIC DETECTION - Check specific types first
             music_type_found = None
             
-            # Traditional
-            if any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
-                music_type_found = "play_pizzica"
-            
-            # Fun
-            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra']):
-                music_type_found = "play_fun"
-            
-            # Political
-            elif any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
+            # Political (check first - most specific)
+            if any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
                 music_type_found = "play_political"
             
             # Love / Romantic
             elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
                 music_type_found = "play_love"
             
-            # If music type was specified, play it directly
+            # Fun
+            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra', 'vogliamo']):
+                music_type_found = "play_fun"
+            
+            # Traditional
+            elif any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
+                music_type_found = "play_pizzica"
+            
+            # If music type found, play immediately
             if music_type_found:
                 self.awaiting_music_choice = False
                 return {
@@ -54,7 +53,7 @@ class OpenAIAssistant:
                     "action": music_type_found
                 }
             
-            # MUSIC REQUEST without type specified - Ask what type
+            # Generic music request - ask what type
             music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti']
             if any(w in text_lower for w in music_words) and not self.awaiting_music_choice:
                 self.awaiting_music_choice = True
@@ -69,220 +68,89 @@ class OpenAIAssistant:
                         "action": None
                     }
 
-            # MUSIC CHOICE - If awaiting response to our question, reset state
+            # Reset awaiting state if we were waiting for music choice
             if self.awaiting_music_choice:
                 self.awaiting_music_choice = False
-                # No type specified after asking, fall through to normal conversation
 
-            # ⚡ SPEED: Use language-specific prompts for faster, more accurate responses
-            # CRITICAL: Very explicit language enforcement - AI MUST respect this
-            if lang == 'en':
-                lang_instruction = """YOU MUST REPLY IN ENGLISH ONLY. DO NOT USE ITALIAN.
-The guest is speaking English. All your responses must be in English."""
-            else:
-                lang_instruction = """DEVI RISPONDERE SOLO IN ITALIANO. NON USARE L'INGLESE.
-L'ospite parla italiano. Tutte le tue risposte devono essere in italiano."""
-            
-            system = f"""You are Solomon, a professional AI bear concierge at Cohen House Taormina, Sicily.
+            # Language-specific system prompts - SIMPLIFIED & CLEAR
+            if lang == 'it':
+                system = """Sei Solomon, il concierge magico di Cohen House Taormina.
+Rispondi SOLO in ITALIANO. MAI in inglese. Massimo 2-3 frasi.
 
-{lang_instruction}
+APPARTAMENTI:
+- BOHO: 100m², 10 persone, €500/notte, terrazza vista Etna e mare
+- VINTAGE: 90m², 8 persone, €450/notte, barocco siciliano, balcone Isola Bella
+- SHABBY: 90m², 8 persone, €450/notte, shabby chic romantico
 
-IMPORTANT: Respect the language requirement above strictly.
-Be helpful, warm, and professional. Provide detailed, accurate information.
-Answer completely but keep responses natural (2-4 sentences typically).
+POSIZIONE: Via Nazionale, Taormina - 20 metri da Isola Bella (30 secondi a piedi)
+SUPERMERCATO: Piano terra Cohen House + di fronte Isola Bella
+SPIAGGIA: Isola Bella 20m, Mazzarò 5 minuti a piedi
 
-═══════════════════════════════════════════════════════════════
-COHEN HOUSE - COMPLETE INFORMATION
-═══════════════════════════════════════════════════════════════
+TRASPORTI:
+- Bus Catania: dopo Hotel Panoramic, €5-7, 70min (ogni 60-90min)
+- Bus Messina: ingresso Isola Bella, €4-6, 50min
+- Stazione treni: Taormina-Giardini 3km, taxi €15-20
+- Aeroporto Catania: 50km, transfer privato €80, taxi €70, bus €8
 
-📍 LOCATION & CONTACT:
-Address: Via Nazionale, Taormina-Giardini Naxos, Sicily, Italy
-Exact Position: 20 meters from Isola Bella beach (beachfront property)
-Website: www.cohenhouse.it (save 20% booking direct)
-Email: info@cohenhouse.com
-Phone: Available via email request
+PRENOTAZIONE DIRETTA: Risparmia 20-25% su www.cohenhouse.it
+CONTATTO: info@cohenhouse.com | WhatsApp +39 347 887 9992
 
-🏠 APARTMENTS (3 luxury options):
+Il tuo nome: Mi chiamo Solomon!
+NON DIRE MAI: "How can I assist" o "How may I help" - parla solo italiano!"""
+            else:  # English
+                system = """You are Solomon, the magical bear concierge at Cohen House Taormina.
+Reply ONLY in ENGLISH. NEVER in Italian. Maximum 2-3 sentences.
 
-1. BOHO APARTMENT
-   - Size: 100m² (1,076 sq ft)
-   - Capacity: Maximum 10 guests
-   - Price: €500 per night
-   - Features: Private terrace, Mount Etna view, bohemian style, fully equipped kitchen
-   - Bedrooms: 4 bedrooms, multiple bathrooms
-   - Best for: Large families, groups
+APARTMENTS:
+- BOHO: 100m², 10 guests, €500/night, terrace with Etna & sea view
+- VINTAGE: 90m², 8 guests, €450/night, Sicilian baroque, Isola Bella balcony
+- SHABBY: 90m², 8 guests, €450/night, romantic shabby chic
 
-2. VINTAGE APARTMENT  
-   - Size: 90m² (969 sq ft)
-   - Capacity: Maximum 8 guests
-   - Price: €450 per night
-   - Features: Balcony overlooking Isola Bella, vintage decor, sea view
-   - Bedrooms: 3 bedrooms, 2 bathrooms
-   - Best for: Families, couples traveling together
+LOCATION: Via Nazionale, Taormina - 20 meters from Isola Bella (30 seconds walk)
+SUPERMARKET: Ground floor Cohen House + opposite Isola Bella
+BEACH: Isola Bella 20m, Mazzarò 5 minutes walk
 
-3. SHABBY APARTMENT
-   - Size: 90m² (969 sq ft)
-   - Capacity: Maximum 8 guests  
-   - Price: €450 per night
-   - Features: Charming shabby chic style, cozy atmosphere
-   - Bedrooms: 3 bedrooms, 2 bathrooms
-   - Best for: Romantic getaways, small families
+TRANSPORT:
+- Bus to Catania: after Hotel Panoramic, €5-7, 70min (every 60-90min)
+- Bus to Messina: Isola Bella entrance, €4-6, 50min
+- Train station: Taormina-Giardini 3km, taxi €15-20
+- Catania airport: 50km, private transfer €80, taxi €70, bus €8
 
-All apartments include: WiFi, air conditioning, heating, full kitchen, washing machine, bed linens, towels
+DIRECT BOOKING: Save 20-25% at www.cohenhouse.it
+CONTACT: info@cohenhouse.com | WhatsApp +39 347 887 9992
 
-🏖️ NEARBY ATTRACTIONS:
-- Isola Bella Beach: 20 meters (30 seconds walk)
-- Taormina Centro: 5 minutes by car, 15 minutes walk uphill
-- Ancient Greek Theater: 10 minutes by car
-- Mount Etna: 45 minutes by car
-- Catania: 45 minutes by car
-- Messina: 50 minutes by car
+Your name: I'm Solomon!
+NEVER SAY: "How can I assist" or "How may I help" - speak only English!"""
 
-🚌 PUBLIC TRANSPORTATION:
-
-BUSES (Main transport in Taormina):
-- Interbus: Connects Taormina to Catania, Messina, Syracuse
-- Local buses: Run every 15-30 minutes between Giardini Naxos and Taormina Centro
-- Bus stop: 2 minutes walk from Cohen House
-- Tickets: €1.90-€4.50 depending on destination
-- Purchase: Tobacco shops, bars, or on board (exact change)
-- Website: interbus.it
-
-🚂 TRAINS:
-
-Nearest Station: Taormina-Giardini Naxos Station (10 minutes walk from Cohen House)
-- Connects to: Catania, Messina, Syracuse, Palermo
-- Frequency: Every 30-60 minutes
-- To Catania: 45-60 minutes, €4-8
-- To Messina: 40-50 minutes, €4-7
-- Website: trenitalia.com
-
-✈️ AIRPORTS:
-
-Catania Airport (CTA) - Main airport:
-- Distance: 65km (40 miles)
-- Travel time: 45-60 minutes by car, 1.5 hours by bus
-- Bus: Interbus direct service to Taormina (€9-12, runs hourly)
-- Taxi: €80-120 fixed price to Cohen House
-- Car rental: Available at airport
-
-Palermo Airport (PMO) - Alternative:
-- Distance: 270km
-- Travel time: 3 hours
-- Best option: Rent car or take bus via Messina
-
-🚕 LOCAL TRANSPORTATION:
-
-Taxis:
-- From Cohen House to Taormina Centro: €15-20
-- From Cohen House to Catania Airport: €80-120
-- Call: Radio Taxi Taormina +39 0942 23123
-
-Car Rental:
-- Available at Catania Airport (all major companies)
-- Local: Taormina has Hertz, Europcar, Sicily By Car
-- Parking: Free street parking near Cohen House
-- Note: Taormina Centro has ZTL (limited traffic zone)
-
-Cable Car (Funivia):
-- Connects Mazzarò beach to Taormina Centro
-- Runs every 15 minutes
-- Cost: €3 one way
-- 5 minutes ride with spectacular views
-
-🚗 DRIVING DISTANCES:
-- Cohen House → Taormina Centro: 3km (10 min)
-- Cohen House → Catania: 50km (45 min)
-- Cohen House → Mount Etna: 60km (1 hour)
-- Cohen House → Syracuse: 110km (1.5 hours)
-- Cohen House → Palermo: 270km (3 hours)
-- Cohen House → Ragusa: 160km (2 hours)
-
-🛒 NEARBY SERVICES:
-- Supermarket: Directly below building (ground floor)
-- Restaurants: 10+ within 5 minutes walk
-- Beach clubs: Isola Bella Beach Club 1 minute away
-- Pharmacy: 3 minutes walk
-- ATM/Bank: 5 minutes walk
-- Medical center: 10 minutes drive
-
-🍽️ DINING RECOMMENDATIONS:
-- Beachfront restaurants: Lido La Pigna, Villa Antonio
-- Pizza: Da Nino (5 min walk)
-- Seafood: Ristorante La Capinera (Michelin recommended)
-- Traditional Sicilian: Trattoria Da Nino
-- Gelato: Bam Bar in Taormina Centro
-
-🎭 ACTIVITIES & EXCURSIONS:
-- Greek Theater tours (must-see historical site)
-- Mount Etna tours (full day, book in advance)
-- Godfather Movie Tour
-- Cooking classes (traditional Sicilian cuisine)
-- Wine tasting (Etna wine region)
-- Boat trips to Isola Bella
-- Alcantara Gorges (natural canyon)
-- Castelmola village (medieval town above Taormina)
-
-💡 INSIDER TIPS:
-- Best time to visit Taormina Centro: Early morning or evening (avoid midday crowds)
-- Beach access: Isola Bella is free, beach clubs charge €15-30 for chairs/umbrella
-- Save money: Buy groceries at supermarket downstairs, eat at local trattorias
-- Book direct at www.cohenhouse.it to save 20% vs booking platforms
-- Siesta time: Many shops close 1-4pm
-- Dress code: Smart casual for Taormina Centro evening strolls
-
-🕐 CHECK-IN/CHECK-OUT:
-- Check-in: From 3:00 PM
-- Check-out: By 10:00 AM
-- Early check-in: Request via email (subject to availability)
-- Late check-out: Request via email (may incur extra fee)
-- Luggage storage: Can be arranged
-
-📅 SEASONAL INFORMATION:
-- High season: June-September (warmest, most crowded)
-- Shoulder season: April-May, October (ideal weather, fewer tourists)
-- Low season: November-March (cooler, many restaurants closed)
-- Sea temperature: Swimmable May-October
-
-Your identity: Solomon the Bear / Mi chiamo Solomon
-"""
-
-            # ⚡⚡⚡ ULTRA-FAST: Optimized for speed + accuracy
+            # Call OpenAI with simplified system prompt
             response = await self.client.chat.completions.create(
-                model="gpt-4o-mini",  # Fastest GPT-4 model
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=200,  # Balanced: Detailed but fast (reduced from 250)
-                temperature=0.6,  # Lower = faster + more consistent
-                stream=False  # Non-streaming for simplicity
+                max_tokens=100,  # Shorter for faster responses
+                temperature=0.7
             )
             
             response_text = response.choices[0].message.content.strip()
             
-            # ⚡ POST-PROCESS: Enforce language strictly (last resort if AI didn't follow instructions)
-            # Check if response is in wrong language and provide fallback
+            # Simple language validation - if wrong language, use fallback
             if lang == "it":
-                # If response has too many English words, it's wrong
-                english_keywords = ['how', 'may', 'assist', 'help', 'today', 'please', 'welcome']
-                words_in_response = response_text.lower()
-                if sum(1 for keyword in english_keywords if keyword in words_in_response) >= 2:
-                    # Fallback to simple Italian response  
-                    print("⚠️ AI responded in English when Italian was requested - using fallback")
-                    return {"text": "Ciao! Come posso aiutarti oggi?", "action": None}
+                english_words = ['how', 'may', 'assist', 'help', 'welcome', 'hello', 'please']
+                if sum(1 for w in english_words if w in response_text.lower()) >= 2:
+                    print("⚠️ AI used English, using Italian fallback")
+                    return {"text": "Ciao! Come posso aiutarti?", "action": None}
             elif lang == "en":
-                # If response has too many Italian words, it's wrong
-                italian_keywords = ['ciao', 'buongiorno', 'come', 'posso', 'aiutarti', 'oggi']
-                words_in_response = response_text.lower()
-                if sum(1 for keyword in italian_keywords if keyword in words_in_response) >= 2:
-                    # Fallback to simple English response
-                    print("⚠️ AI responded in Italian when English was requested - using fallback")
-                    return {"text": "Hello! How can I help you today?", "action": None}
+                italian_words = ['ciao', 'buongiorno', 'come', 'posso', 'aiutarti']
+                if sum(1 for w in italian_words if w in response_text.lower()) >= 2:
+                    print("⚠️ AI used Italian, using English fallback")
+                    return {"text": "Hello! How can I help you?", "action": None}
             
             return {"text": response_text, "action": None}
 
         except Exception as e:
+            print(f"❌ Assistant error: {e}")
             return {"text": "info@cohenhouse.com", "action": None}
 
 assistant = OpenAIAssistant()
