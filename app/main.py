@@ -27,25 +27,23 @@ async def websocket_endpoint(websocket: WebSocket):
             guest_name = data.get("guest_name")
             visit_count = data.get("visit_count", 0)
             
+            # Don't respond to empty or very short inputs
+            if not text or len(text.strip()) < 2:
+                print(f"⚠️ Ignoring empty/short input")
+                continue
+            
             # Don't respond while music is playing
-            # if spotify.is_music_playing():
-            #     print(f"🎵 Music playing, ignoring: {text}")
-            #     continue
+            if spotify.is_music_playing():
+                print(f"🎵 Music playing, ignoring: {text}")
+                continue
             
             start_time = time.time()
             
-            # ⚡ OPTIMIZATION 1: Check quick response cache first
-            quick_response, is_music = get_quick_response(text, lang)
-            if quick_response:
-                print(f"⚡ INSTANT response ({time.time() - start_time:.2f}s)")
-                response_text = quick_response
-                action = "play_pizzica" if is_music else None
-            else:
-                # Get AI response only if not in cache
-                response = await assistant.ask(text, lang, guest_name=guest_name, visit_count=visit_count)
-                response_text = response.get("text")
-                action = response.get("action")
-                print(f"🤖 AI response ({time.time() - start_time:.2f}s)")
+            # Skip quick response cache - use AI for all responses to avoid conflicts
+            response = await assistant.ask(text, lang, guest_name=guest_name, visit_count=visit_count)
+            response_text = response.get("text")
+            action = response.get("action")
+            print(f"🤖 AI response ({time.time() - start_time:.2f}s)")
             
             # Handle actions with consolidated logic
             music_actions = {
@@ -53,6 +51,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 "play_pizzica": spotify.play_pizzica_di_san_vito,
                 "play_fun_music": spotify.play_fun_song,
                 "play_bambole": spotify.play_fun_song,
+                "play_fun": spotify.play_fun_song,
+                "play_political": spotify.play_political_song,
+                "play_love": spotify.play_love_song,
                 "open_spotify": spotify.open_spotify
             }
             

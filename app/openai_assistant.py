@@ -1,104 +1,164 @@
 from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
-import random
 
 load_dotenv()
+
+# Dramatic phrase for music playback
+MUSIC_FIRE_PHRASE = "Orchestra, let turn the silence into fire. One breath, one will, no mercy - Firee!"
 
 class OpenAIAssistant:
     def __init__(self):
         api_key = os.getenv("OPENAI_API_KEY")
         self.client = AsyncOpenAI(api_key=api_key)
+        self.awaiting_music_choice = False
         print("✅ Solomon ready")
 
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
+            # Handle null/empty text
+            if not text:
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
+            
+            text = text.strip()
+            if len(text) < 2:  # Minimum 2 characters
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
+            
             text_lower = text.lower()
+            
+            # Filter out common noise/non-questions
+            noise_words = ['cough', 'ah', 'uh', 'um', 'er', 'hmm', 'mm', 'agh', 'ugh']
+            text_words = text_lower.split()
+            if len(text_words) <= 3 and all(word in noise_words for word in text_words):
+                print(f"⚠️ Filtered noise: {text}")
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
 
-            # MUSIC TRIGGER with 3 options
-            if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
-                # Traditional
-                if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
-                    phrases = [
-                        "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_pizzica"}
+            # MUSIC DETECTION - Check specific types first
+            music_type_found = None
+            
+            # Political (check first - most specific)
+            if any(k in text_lower for k in ['politica', 'political', 'marinno', 'deija']):
+                music_type_found = "play_political"
+            
+            # Love / Romantic
+            elif any(k in text_lower for k in ['amore', 'love', 'romantica', 'romantic', 'impero', 'mannarino']):
+                music_type_found = "play_love"
+            
+            # Fun
+            elif any(k in text_lower for k in ['divertente', 'fun', 'funny', 'bambole', 'allegra', 'vogliamo']):
+                music_type_found = "play_fun"
+            
+            # Traditional
+            elif any(k in text_lower for k in ['tradizionale', 'traditional', 'pizzica', 'tarantella']):
+                music_type_found = "play_pizzica"
+            
+            # If music type found, play immediately
+            if music_type_found:
+                self.awaiting_music_choice = False
+                return {
+                    "text": MUSIC_FIRE_PHRASE,
+                    "action": music_type_found
+                }
+            
+            # Generic music request - ask what type
+            music_words = ['musica', 'music', 'song', 'canzone', 'play', 'suona', 'metti']
+            if any(w in text_lower for w in music_words) and not self.awaiting_music_choice:
+                self.awaiting_music_choice = True
+                if lang == 'it':
+                    return {
+                        "text": "Che tipo di musica? Tradizionale, Divertente, Politica, o Amore?",
+                        "action": None
+                    }
+                else:
+                    return {
+                        "text": "What kind of music? Traditional, Fun, Political, or Love?",
+                        "action": None
+                    }
 
-                # Fun
-                if any(k in text_lower for k in ['divertente', 'fun', 'bambole', 'allegra']):
-                    phrases = [
-                        "Chaos incoming! VOGLIAMO LE BAMBOLE!",
-                        "Madness begins... Vogliamo le bambole!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_bambole"}
+            # Reset awaiting state if we were waiting for music choice
+            if self.awaiting_music_choice:
+                self.awaiting_music_choice = False
 
-                # Default – ask and open Spotify
-                phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
-                ]
-                return {"text": random.choice(phrases), "action": "open_spotify"}
+            # Language-specific system prompts - SIMPLIFIED & CLEAR
+            if lang == 'it':
+                system = """Sei Solomon, il concierge magico di Cohen House Taormina.
+Rispondi SOLO in ITALIANO. MAI in inglese. Massimo 2-3 frasi.
 
-            # ⚡ ACCURATE INFORMATION: Enhanced system prompt with strict facts
-            system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina, Sicily.
+APPARTAMENTI:
+- BOHO: 100m², 10 persone, €500/notte, terrazza vista Etna e mare
+- VINTAGE: 90m², 8 persone, €450/notte, barocco siciliano, balcone Isola Bella
+- SHABBY: 90m², 8 persone, €450/notte, shabby chic romantico
 
-CRITICAL: REPLY IN {lang.upper()} ONLY! Be brief and ACCURATE (1-3 sentences).
+POSIZIONE: Via Nazionale, Taormina - 20 metri da Isola Bella (30 secondi a piedi)
+SUPERMERCATO: Piano terra Cohen House + di fronte Isola Bella
+SPIAGGIA: Isola Bella 20m, Mazzarò 5 minuti a piedi
 
-EXACT APARTMENT FACTS (memorize these numbers):
-BOHO:
-- Size: EXACTLY 100 square meters
-- Guests: MAXIMUM 10 people
-- Price: EXACTLY €500 per night
-- Style: Bohemian design
-- Special: Private terrace with Mount Etna view
+TRASPORTI:
+- Bus Catania: dopo Hotel Panoramic, €5-7, 70min (ogni 60-90min)
+- Bus Messina: ingresso Isola Bella, €4-6, 50min
+- Stazione treni: Taormina-Giardini 3km, taxi €15-20
+- Aeroporto Catania: 50km, transfer privato €80, taxi €70, bus €8
 
-VINTAGE:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Baroque elegance
-- Special: Balcony overlooking Isola Bella beach
+PRENOTAZIONE DIRETTA: Risparmia 20-25% su www.cohenhouse.it
+CONTATTO: info@cohenhouse.com | WhatsApp +39 347 887 9992
 
-SHABBY:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Shabby chic with pastel colors
-- Special: Charming coastal atmosphere
+Il tuo nome: Mi chiamo Solomon, parlo italiano e inglese!
+Rispondi in italiano perché il cliente parla italiano."""
+            else:  # English
+                system = """You are Solomon, the magical bear concierge at Cohen House Taormina.
+Reply ONLY in ENGLISH. NEVER in Italian. Maximum 2-3 sentences.
 
-LOCATION FACTS:
-- Address: Via Nazionale, Taormina, Sicily, Italy
-- Beach: EXACTLY 20 meters from Isola Bella beach
-- Supermarket: Located below Cohen House building
-- Town center: 5-minute walk
+APARTMENTS:
+- BOHO: 100m², 10 guests, €500/night, terrace with Etna & sea view
+- VINTAGE: 90m², 8 guests, €450/night, Sicilian baroque, Isola Bella balcony
+- SHABBY: 90m², 8 guests, €450/night, romantic shabby chic
 
-BOOKING INFORMATION:
-- Website: www.cohenhouse.it
-- Direct booking discount: 20-25% savings vs booking platforms
-- Contact: info@cohenhouse.com
+LOCATION: Via Nazionale, Taormina - 20 meters from Isola Bella (30 seconds walk)
+SUPERMARKET: Ground floor Cohen House + opposite Isola Bella
+BEACH: Isola Bella 20m, Mazzarò 5 minutes walk
 
-IDENTITY:
-- Name: Solomon (magical AI bear)
-- Role: 24/7 AI concierge assistant
-- Languages: Italian and English
-"""
+TRANSPORT:
+- Bus to Catania: after Hotel Panoramic, €5-7, 70min (every 60-90min)
+- Bus to Messina: Isola Bella entrance, €4-6, 50min
+- Train station: Taormina-Giardini 3km, taxi €15-20
+- Catania airport: 50km, private transfer €80, taxi €70, bus €8
 
-            # ⚡ SPEED + ACCURACY: Optimized parameters
+DIRECT BOOKING: Save 20-25% at www.cohenhouse.it
+CONTACT: info@cohenhouse.com | WhatsApp +39 347 887 9992
+
+Your name: I'm Solomon, I speak Italian and English!
+Respond in English because the guest is speaking English."""
+
+            # Call OpenAI with optimized parameters for speed
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=80,
-                temperature=0.2,  # ⚡ Further reduced to 0.2 for maximum accuracy
-                top_p=0.9  # ⚡ Added for more focused responses
+                max_tokens=80,  # Reduced for faster responses
+                temperature=0.6,  # Lower for faster, more consistent output
+                stream=False  # Explicit non-streaming
             )
-
-            return {"text": response.choices[0].message.content.strip(), "action": None}
+            
+            response_text = response.choices[0].message.content.strip()
+            
+            # Simple language validation - if wrong language, use fallback
+            if lang == "it":
+                english_words = ['how', 'may', 'assist', 'help', 'welcome', 'hello', 'please']
+                if sum(1 for w in english_words if w in response_text.lower()) >= 2:
+                    print("⚠️ AI used English, using Italian fallback")
+                    return {"text": "Ciao! Dimmi pure, come posso aiutarti?", "action": None}
+            elif lang == "en":
+                italian_words = ['ciao', 'buongiorno', 'come', 'posso', 'aiutarti']
+                if sum(1 for w in italian_words if w in response_text.lower()) >= 2:
+                    print("⚠️ AI used Italian, using English fallback")
+                    return {"text": "Hello! What can I do for you?", "action": None}
+            
+            return {"text": response_text, "action": None}
 
         except Exception as e:
+            print(f"❌ Assistant error: {e}")
             return {"text": "info@cohenhouse.com", "action": None}
 
 assistant = OpenAIAssistant()

@@ -6,6 +6,8 @@ class SpotifyController:
     def __init__(self):
         self.pizzica_track = "spotify:track:7MTyDl0UFVVJ1BLFQd8Er8"
         self.fun_track = "spotify:track:6yJuXrXneHttpJjzCWvnMG"
+        self.political_track = "spotify:track:205qFlGXIK5tcygiVYFMVS"  # Deija na Marinno
+        self.love_track = "spotify:track:5vV4umLhQqsuk6ei84nelx"  # L'impero - Mannarino
         self.is_playing = False
         print("✅ Music controller ready")
     
@@ -33,7 +35,17 @@ class SpotifyController:
     def play_fun_song(self):
         """Play fun song"""
         self.is_playing = True
-        return self._play_track_invisible(self.fun_track, "Fun Song", duration=180)
+        return self._play_track_invisible(self.fun_track, "Vogliamo le bambole", duration=180)
+    
+    def play_political_song(self):
+        """Play political song"""
+        self.is_playing = True
+        return self._play_track_invisible(self.political_track, "Deija na Marinno", duration=180)
+    
+    def play_love_song(self):
+        """Play love song"""
+        self.is_playing = True
+        return self._play_track_invisible(self.love_track, "L'impero - Mannarino", duration=240)
     
     def _play_track_invisible(self, track_uri, track_name, duration=180):
         """Play track with Spotify INVISIBLE, browser stays visible"""
