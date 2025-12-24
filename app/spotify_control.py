@@ -6,8 +6,8 @@ class SpotifyController:
     def __init__(self):
         self.pizzica_track = "spotify:track:7MTyDl0UFVVJ1BLFQd8Er8"
         self.fun_track = "spotify:track:6yJuXrXneHttpJjzCWvnMG"
-        self.political_track = "spotify:track:0sQiZRG2mVZNHOZdFvKvQp"  # Deija na Marinno
-        self.love_track = "spotify:track:2Z8WuEywRWYTKe1NybPQEW"  # L'impero - Mannarino
+        self.political_track = "spotify:track:205qFlGXIK5tcygiVYFMVS"  # Deija na Marinno
+        self.love_track = "spotify:track:5vV4umLhQqsuk6ei84nelx"  # L'impero - Mannarino
         self.is_playing = False
         print("✅ Music controller ready")
     
