@@ -18,10 +18,14 @@ class OpenAIAssistant:
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
             # ⚡ SPEED: Handle null/empty text immediately
-            if not text or len(text.strip()) < 2:
+            if not text:
                 return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
             
-            text_lower = text.lower().strip()
+            text = text.strip()
+            if len(text) < 2:
+                return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
+            
+            text_lower = text.lower()
 
             # Check if user specified music type directly (either initially or in response to question)
             music_type_found = None
@@ -71,16 +75,19 @@ class OpenAIAssistant:
                 # No type specified after asking, fall through to normal conversation
 
             # ⚡ SPEED: Use language-specific prompts for faster, more accurate responses
-            # Shorter system prompt = faster API processing + lower costs
+            # CRITICAL: Very explicit language enforcement - AI MUST respect this
             if lang == 'en':
-                lang_instruction = 'Reply ONLY in English. Guest speaks English.'
+                lang_instruction = """YOU MUST REPLY IN ENGLISH ONLY. DO NOT USE ITALIAN.
+The guest is speaking English. All your responses must be in English."""
             else:
-                lang_instruction = 'Rispondi SOLO in italiano. Cliente parla italiano.'
+                lang_instruction = """DEVI RISPONDERE SOLO IN ITALIANO. NON USARE L'INGLESE.
+L'ospite parla italiano. Tutte le tue risposte devono essere in italiano."""
             
             system = f"""You are Solomon, a professional AI bear concierge at Cohen House Taormina, Sicily.
 
 {lang_instruction}
 
+IMPORTANT: Respect the language requirement above strictly.
 Be helpful, warm, and professional. Provide detailed, accurate information.
 Answer completely but keep responses natural (2-4 sentences typically).
 
@@ -251,8 +258,29 @@ Your identity: Solomon the Bear / Mi chiamo Solomon
                 temperature=0.6,  # Lower = faster + more consistent
                 stream=False  # Non-streaming for simplicity
             )
-
-            return {"text": response.choices[0].message.content.strip(), "action": None}
+            
+            response_text = response.choices[0].message.content.strip()
+            
+            # ⚡ POST-PROCESS: Enforce language strictly (last resort if AI didn't follow instructions)
+            # Check if response is in wrong language and provide fallback
+            if lang == "it":
+                # If response has too many English words, it's wrong
+                english_keywords = ['how', 'may', 'assist', 'help', 'today', 'please', 'welcome']
+                words_in_response = response_text.lower()
+                if sum(1 for keyword in english_keywords if keyword in words_in_response) >= 2:
+                    # Fallback to simple Italian response  
+                    print("⚠️ AI responded in English when Italian was requested - using fallback")
+                    return {"text": "Ciao! Come posso aiutarti oggi?", "action": None}
+            elif lang == "en":
+                # If response has too many Italian words, it's wrong
+                italian_keywords = ['ciao', 'buongiorno', 'come', 'posso', 'aiutarti', 'oggi']
+                words_in_response = response_text.lower()
+                if sum(1 for keyword in italian_keywords if keyword in words_in_response) >= 2:
+                    # Fallback to simple English response
+                    print("⚠️ AI responded in Italian when English was requested - using fallback")
+                    return {"text": "Hello! How can I help you today?", "action": None}
+            
+            return {"text": response_text, "action": None}
 
         except Exception as e:
             return {"text": "info@cohenhouse.com", "action": None}
