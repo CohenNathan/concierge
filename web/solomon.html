@@ -282,8 +282,8 @@
                 const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
                 audioChunks = [];
                 
-                // Lower threshold for better capture
-                if (audioBlob.size > 30000) {
+                // Higher threshold to reduce noise/empty requests
+                if (audioBlob.size > 60000) {
                     await transcribeAudio(audioBlob);
                 } else {
                     startRecording();
@@ -354,10 +354,10 @@
                 statusBar.className = 'listening';
                 statusEl.textContent = 'Listening';
                 
-                // LONGER recording time for better capture
+                // Auto-stop after 6 seconds to prevent too many empty requests
                 setTimeout(() => {
                     if (isRecording) stopRecording();
-                }, 12000);  // 8 seconds
+                }, 6000);  // 6 seconds
             }
         }
         
