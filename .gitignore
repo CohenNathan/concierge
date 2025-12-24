@@ -26,29 +26,15 @@ node_modules/
 
 # TTS cache
 tts_*.mp3
+tts_cache/
+audio_cache/
+*.mp3
 
 # PID files
 server.pid
+*.pid
 
 # Backups
-*.backup
-*.OLD
-*.broken
-
-# Logs
-*.log
-
-# Python cache
-__pycache__
-*.pyc
-
-
-# TTS cache
-tts_cache/
-*.mp3
-audio_cache/
-
-# Backup files  
 *.backup
 *.OLD
 *.broken
@@ -56,8 +42,6 @@ audio_cache/
 
 # Data files
 data/
-server.pid
-*.pid
 
 # Face recognition
 *.pkl
@@ -66,3 +50,12 @@ server.pid
 # Python cache
 __pycache__/
 *.pyc
+
+# Testing and Coverage
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.pytest_cache/
+.tox/
+
