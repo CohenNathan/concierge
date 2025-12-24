@@ -21,7 +21,7 @@ class OpenAIAssistant:
                 return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
             
             text = text.strip()
-            if len(text) < 3:  # Increased from 2 to 3 to filter more noise
+            if len(text) < 2:  # Minimum 2 characters
                 return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
             
             text_lower = text.lower()

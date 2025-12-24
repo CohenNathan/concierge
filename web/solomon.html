@@ -283,7 +283,7 @@
                 audioChunks = [];
                 
                 // Higher threshold to reduce noise/empty requests
-                if (audioBlob.size > 60000) {
+                if (audioBlob.size > 40000) {
                     await transcribeAudio(audioBlob);
                 } else {
                     startRecording();
