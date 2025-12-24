@@ -18,11 +18,11 @@ class OpenAIAssistant:
         try:
             # Handle null/empty text
             if not text:
-                return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
             
             text = text.strip()
             if len(text) < 3:  # Increased from 2 to 3 to filter more noise
-                return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
             
             text_lower = text.lower()
             
@@ -31,7 +31,7 @@ class OpenAIAssistant:
             text_words = text_lower.split()
             if len(text_words) <= 3 and all(word in noise_words for word in text_words):
                 print(f"⚠️ Filtered noise: {text}")
-                return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
+                return {"text": "Dimmi pure!" if lang == "it" else "Go ahead!", "action": None}
 
             # MUSIC DETECTION - Check specific types first
             music_type_found = None
@@ -102,8 +102,8 @@ TRASPORTI:
 PRENOTAZIONE DIRETTA: Risparmia 20-25% su www.cohenhouse.it
 CONTATTO: info@cohenhouse.com | WhatsApp +39 347 887 9992
 
-Il tuo nome: Mi chiamo Solomon!
-NON DIRE MAI: "How can I assist" o "How may I help" - parla solo italiano!"""
+Il tuo nome: Mi chiamo Solomon, parlo italiano e inglese!
+Rispondi in italiano perché il cliente parla italiano."""
             else:  # English
                 system = """You are Solomon, the magical bear concierge at Cohen House Taormina.
 Reply ONLY in ENGLISH. NEVER in Italian. Maximum 2-3 sentences.
@@ -126,8 +126,8 @@ TRANSPORT:
 DIRECT BOOKING: Save 20-25% at www.cohenhouse.it
 CONTACT: info@cohenhouse.com | WhatsApp +39 347 887 9992
 
-Your name: I'm Solomon!
-NEVER SAY: "How can I assist" or "How may I help" - speak only English!"""
+Your name: I'm Solomon, I speak Italian and English!
+Respond in English because the guest is speaking English."""
 
             # Call OpenAI with optimized parameters for speed
             response = await self.client.chat.completions.create(
@@ -148,12 +148,12 @@ NEVER SAY: "How can I assist" or "How may I help" - speak only English!"""
                 english_words = ['how', 'may', 'assist', 'help', 'welcome', 'hello', 'please']
                 if sum(1 for w in english_words if w in response_text.lower()) >= 2:
                     print("⚠️ AI used English, using Italian fallback")
-                    return {"text": "Ciao! Come posso aiutarti?", "action": None}
+                    return {"text": "Ciao! Dimmi pure, come posso aiutarti?", "action": None}
             elif lang == "en":
                 italian_words = ['ciao', 'buongiorno', 'come', 'posso', 'aiutarti']
                 if sum(1 for w in italian_words if w in response_text.lower()) >= 2:
                     print("⚠️ AI used Italian, using English fallback")
-                    return {"text": "Hello! How can I help you?", "action": None}
+                    return {"text": "Hello! What can I do for you?", "action": None}
             
             return {"text": response_text, "action": None}
 
