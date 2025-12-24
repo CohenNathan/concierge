@@ -21,10 +21,17 @@ class OpenAIAssistant:
                 return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
             
             text = text.strip()
-            if len(text) < 2:
+            if len(text) < 3:  # Increased from 2 to 3 to filter more noise
                 return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
             
             text_lower = text.lower()
+            
+            # Filter out common noise/non-questions
+            noise_words = ['cough', 'ah', 'uh', 'um', 'er', 'hmm', 'mm', 'agh', 'ugh']
+            text_words = text_lower.split()
+            if len(text_words) <= 3 and all(word in noise_words for word in text_words):
+                print(f"⚠️ Filtered noise: {text}")
+                return {"text": "Come posso aiutarti?" if lang == "it" else "How can I help you?", "action": None}
 
             # MUSIC DETECTION - Check specific types first
             music_type_found = None
@@ -122,15 +129,16 @@ CONTACT: info@cohenhouse.com | WhatsApp +39 347 887 9992
 Your name: I'm Solomon!
 NEVER SAY: "How can I assist" or "How may I help" - speak only English!"""
 
-            # Call OpenAI with simplified system prompt
+            # Call OpenAI with optimized parameters for speed
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=100,  # Shorter for faster responses
-                temperature=0.7
+                max_tokens=80,  # Reduced for faster responses
+                temperature=0.6,  # Lower for faster, more consistent output
+                stream=False  # Explicit non-streaming
             )
             
             response_text = response.choices[0].message.content.strip()
