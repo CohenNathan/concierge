@@ -4,8 +4,11 @@ import threading
 
 class SpotifyController:
     def __init__(self):
-        self.pizzica_track = "spotify:track:7MTyDl0UFVVJ1BLFQd8Er8"
-        self.fun_track = "spotify:track:6yJuXrXneHttpJjzCWvnMG"
+        # 4 music types for different moods
+        self.pizzica_track = "spotify:track:7MTyDl0UFVVJ1BLFQd8Er8"  # Traditional
+        self.fun_track = "spotify:track:6yJuXrXneHttpJjzCWvnMG"  # Fun/Party
+        self.political_track = "spotify:track:205qFlGXIK5tcygiVYFMVS"  # Political
+        self.love_track = "spotify:track:5vV4umLhQqsuk6ei84nelx"  # Romantic
         self.is_playing = False
         print("✅ Music controller ready")
     
@@ -31,16 +34,24 @@ class SpotifyController:
         return self._play_track_invisible(self.pizzica_track, "Pizzica di San Vito", duration=210)
     
     def play_fun_song(self):
-        """Play fun song"""
+        """Play fun song - Vogliamo le bambole"""
         self.is_playing = True
-        return self._play_track_invisible(self.fun_track, "Fun Song", duration=180)
+        return self._play_track_invisible(self.fun_track, "Vogliamo le bambole", duration=180)
+    
+    def play_political_song(self):
+        """Play political/cultural song - Deija na Marinno"""
+        self.is_playing = True
+        return self._play_track_invisible(self.political_track, "Deija na Marinno", duration=180)
+    
+    def play_love_song(self):
+        """Play romantic song - L'impero by Mannarino"""
+        self.is_playing = True
+        return self._play_track_invisible(self.love_track, "L'impero - Mannarino", duration=240)
     
     def _play_track_invisible(self, track_uri, track_name, duration=180):
         """Play track with Spotify INVISIBLE, browser stays visible"""
         try:
-            # CRITICAL: Only hide Spotify, NOT the browser!
             applescript = f'''
-            -- Play the track in Spotify
             tell application "Spotify"
                 if not application "Spotify" is running then
                     launch
@@ -49,14 +60,12 @@ class SpotifyController:
                 play track "{track_uri}"
             end tell
             
-            -- Hide ONLY Spotify process (not Chrome/browser!)
             tell application "System Events"
                 if exists (process "Spotify") then
                     set visible of process "Spotify" to false
                 end if
             end tell
             
-            -- Keep browser/Chrome in front
             tell application "Google Chrome"
                 activate
             end tell
@@ -69,7 +78,6 @@ class SpotifyController:
                 check=False
             )
             
-            # Continue hiding ONLY Spotify (not browser)
             def keep_spotify_hidden():
                 for _ in range(8):
                     time.sleep(0.6)
@@ -92,6 +100,7 @@ class SpotifyController:
             threading.Thread(target=keep_spotify_hidden, daemon=True).start()
             
             print(f"🔥 Playing {track_name} - Spotify hidden, browser visible")
+            print(f"📀 Track URI: {track_uri}")
             
             def mark_finished():
                 time.sleep(duration)

@@ -18,7 +18,7 @@ QUICK_RESPONSES = {
         'dove': "Via Nazionale, esattamente 20 metri da Isola Bella.",
         'dove siete': "Via Nazionale, Taormina, 20 metri dalla spiaggia.",
         'indirizzo': "Via Nazionale, Taormina, Sicilia. Vicino Isola Bella!",
-        'spiaggia': "Isola Bella è a esattamente 20 metri!",
+        # 'spiaggia':  # DISABLED "Isola Bella è a esattamente 20 metri!",
         'mare': "Il mare è vicinissimo, solo 20 metri!",
         'distanza': "20 metri da Isola Bella, 5 minuti a piedi dal centro!",
         
@@ -89,7 +89,7 @@ QUICK_RESPONSES = {
         'where': "Via Nazionale, Taormina, exactly 20 meters from Isola Bella.",
         'location': "Via Nazionale, just 20 meters from the beach!",
         'address': "Via Nazionale, Taormina, Sicily, near Isola Bella.",
-        'beach': "Isola Bella beach is exactly 20 meters away!",
+        # 'beach':  # DISABLED - let AI handle detailed beach questions "Isola Bella beach is exactly 20 meters away!",
         'sea': "The sea is super close, only 20 meters!",
         'distance': "20 meters to Isola Bella, 5-minute walk to town center!",
         

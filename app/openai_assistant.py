@@ -1,104 +1,86 @@
-from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
-import random
+from openai import AsyncOpenAI
+from app.knowledge_retriever import knowledge
+from app.music_phrases import get_music_phrase
 
 load_dotenv()
 
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
 class OpenAIAssistant:
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
-        self.client = AsyncOpenAI(api_key=api_key)
-        print("✅ Solomon ready")
-
+        self.client = client
+    
     async def ask(self, text: str, lang: str = "it", **kwargs):
         try:
-            text_lower = text.lower()
+            # Get relevant knowledge based on query
+            context = knowledge.get_context_for_query(text)
+            
+            # Build focused system prompt with relevant facts
+            system = f"""You are Solomon, professional AI concierge at Cohen House, Taormina, Sicily.
 
-            # MUSIC TRIGGER with 3 options
-            if any(k in text_lower for k in ['musica', 'music', 'spotify', 'canzone', 'song', 'suona', 'play', 'metti']):
-                # Traditional
-                if any(k in text_lower for k in ['pizzica', 'tradizionale', 'traditional', 'tarantella', 'salento']):
-                    phrases = [
-                        "The ancient rhythm awakens... PIZZICA DI SAN VITO!",
-                        "Salento spirit rising... Orchestra – PIZZICA!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_pizzica"}
+RESPOND IN {lang.upper()} LANGUAGE ONLY. Be professional, accurate, and helpful.
 
-                # Fun
-                if any(k in text_lower for k in ['divertente', 'fun', 'bambole', 'allegra']):
-                    phrases = [
-                        "Chaos incoming! VOGLIAMO LE BAMBOLE!",
-                        "Madness begins... Vogliamo le bambole!"
-                    ]
-                    return {"text": random.choice(phrases), "action": "play_bambole"}
+VERIFIED INFORMATION ABOUT COHEN HOUSE:
+{context}
 
-                # Default – ask and open Spotify
-                phrases = [
-                    "Orchestra awaits your command. What kind of music? Traditional, fun, or your choice on Spotify?",
-                    "The stage is set. Tell me your mood – opening Spotify for you."
-                ]
-                return {"text": random.choice(phrases), "action": "open_spotify"}
+BOOKING:
+- Email: info@cohenhouse.com
+- Website: www.cohenhouse.it  
+- Direct booking saves 20-25% vs Airbnb
 
-            # ⚡ ACCURATE INFORMATION: Enhanced system prompt with strict facts
-            system = f"""You are Solomon, magical AI bear concierge at Cohen House Taormina, Sicily.
+YOUR CAPABILITIES:
+- Search flights on Skyscanner (say "open Skyscanner")
+- Search trains on Trenitalia (say "open Trenitalia")
+- Play Sicilian music via Spotify (traditional, fun, romantic, political)
+- Provide detailed local information
+- Help with bookings and reservations
 
-CRITICAL: REPLY IN {lang.upper()} ONLY! Be brief and ACCURATE (1-3 sentences).
-
-EXACT APARTMENT FACTS (memorize these numbers):
-BOHO:
-- Size: EXACTLY 100 square meters
-- Guests: MAXIMUM 10 people
-- Price: EXACTLY €500 per night
-- Style: Bohemian design
-- Special: Private terrace with Mount Etna view
-
-VINTAGE:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Baroque elegance
-- Special: Balcony overlooking Isola Bella beach
-
-SHABBY:
-- Size: EXACTLY 90 square meters
-- Guests: MAXIMUM 8 people
-- Price: EXACTLY €450 per night
-- Style: Shabby chic with pastel colors
-- Special: Charming coastal atmosphere
-
-LOCATION FACTS:
-- Address: Via Nazionale, Taormina, Sicily, Italy
-- Beach: EXACTLY 20 meters from Isola Bella beach
-- Supermarket: Located below Cohen House building
-- Town center: 5-minute walk
-
-BOOKING INFORMATION:
-- Website: www.cohenhouse.it
-- Direct booking discount: 20-25% savings vs booking platforms
-- Contact: info@cohenhouse.com
-
-IDENTITY:
-- Name: Solomon (magical AI bear)
-- Role: 24/7 AI concierge assistant
-- Languages: Italian and English
+Be warm and professional. Provide accurate information from the context above.
 """
 
-            # ⚡ SPEED + ACCURACY: Optimized parameters
             response = await self.client.chat.completions.create(
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": system},
                     {"role": "user", "content": text}
                 ],
-                max_tokens=80,
-                temperature=0.2,  # ⚡ Further reduced to 0.2 for maximum accuracy
-                top_p=0.9  # ⚡ Added for more focused responses
+                max_tokens=250,
+                temperature=0.3
             )
-
-            return {"text": response.choices[0].message.content.strip(), "action": None}
-
+            
+            # Check for action triggers
+            response_text = response.choices[0].message.content.strip()
+            action = None
+            
+            text_lower = text.lower()
+            
+            # Music type detection with DRAMATIC phrases
+            if any(k in text_lower for k in ['fun', 'party', 'bambole', 'allegr', 'festiv']):
+                response_text = get_music_phrase('fun')
+                action = "play_fun_music"
+            elif any(k in text_lower for k in ['love', 'romantic', 'amore', 'romantico']):
+                response_text = get_music_phrase('romantic')
+                action = "play_love"
+            elif any(k in text_lower for k in ['political', 'cultur', 'politico', 'deija']):
+                response_text = get_music_phrase('political')
+                action = "play_political"
+            elif any(k in text_lower for k in ['traditional', 'pizzica', 'folk', 'tradizional']):
+                response_text = get_music_phrase('traditional')
+                action = "play_traditional"
+            elif any(k in text_lower for k in ['music', 'musica', 'song', 'canzone', 'play', 'suona']):
+                response_text = get_music_phrase('traditional')  # Default
+                action = "play_pizzica"
+            elif any(k in text_lower for k in ['flight', 'volo', 'aereo', 'skyscanner']):
+                action = "open_skyscanner"
+            elif any(k in text_lower for k in ['train', 'treno', 'trenitalia']):
+                action = "open_trenitalia"
+            
+            return {"text": response_text, "action": action}
+            
         except Exception as e:
+            print(f"❌ AI Error: {e}")
             return {"text": "info@cohenhouse.com", "action": None}
 
 assistant = OpenAIAssistant()

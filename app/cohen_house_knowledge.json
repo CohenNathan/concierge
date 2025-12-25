@@ -1,0 +1,148 @@
+{
+  "location": {
+    "address": "Via Nazionale 224, Taormina, Sicily, Italy",
+    "beach_mazzaro": "50 meters walking distance",
+    "beach_isola_bella": "20 meters",
+    "to_center_funicular": "5 minutes by cable car",
+    "to_center_walking": "15 minutes uphill walk",
+    "supermarket": "Ground floor of building",
+    "train_station": "Taormina-Giardini station, 5 minutes by car",
+    "airport": "Catania Airport (CTA), 45 minutes by car"
+  },
+  
+  "apartments": {
+    "boho": {
+      "size_sqm": 100,
+      "guests_max": 10,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "price_per_night": 500,
+      "features": [
+        "Private terrace with Mount Etna view",
+        "Bohemian artistic design",
+        "Fully equipped kitchen",
+        "Air conditioning",
+        "WiFi",
+        "Washing machine"
+      ]
+    },
+    "vintage": {
+      "size_sqm": 90,
+      "guests_max": 8,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "price_per_night": 450,
+      "features": [
+        "Balcony overlooking sea",
+        "Baroque elegance",
+        "Sea view from bedrooms",
+        "Fully equipped kitchen",
+        "Air conditioning",
+        "WiFi",
+        "Washing machine"
+      ]
+    },
+    "shabby": {
+      "size_sqm": 90,
+      "guests_max": 6,
+      "bedrooms": 2,
+      "bathrooms": 2,
+      "price_per_night": 400,
+      "features": [
+        "Garden access",
+        "Shabby chic style with pastel colors",
+        "Romantic coastal atmosphere",
+        "Fully equipped kitchen",
+        "Air conditioning",
+        "WiFi",
+        "Washing machine"
+      ]
+    }
+  },
+  
+  "transportation": {
+    "from_airport": {
+      "taxi": "€80-100, 45 minutes",
+      "bus": "Interbus to Taormina, then local bus",
+      "car_rental": "Recommended, 45 minute drive"
+    },
+    "from_train_station": {
+      "taxi": "€15-20, 5 minutes",
+      "bus": "Local bus to Via Nazionale"
+    },
+    "in_taormina": {
+      "funicular": "Cable car to/from town center, 5 minutes, €3 one-way",
+      "walking": "15 minutes uphill to center, 10 minutes downhill",
+      "local_bus": "Frequent service along Via Nazionale"
+    }
+  },
+  
+  "beaches": {
+    "mazzaro": {
+      "distance": "50 meters walking",
+      "access": "Via stairs or funicular",
+      "type": "Pebble beach with clear water",
+      "facilities": "Beach clubs, restaurants, water sports"
+    },
+    "isola_bella": {
+      "distance": "20 meters",
+      "type": "Nature reserve, stunning beauty",
+      "access": "Direct walking access"
+    }
+  },
+  
+  "restaurants": {
+    "fine_dining": [
+      "La Capinera - Michelin star, seafood",
+      "Casa Grugno - Creative Sicilian"
+    ],
+    "casual": [
+      "Trattoria Don Ciccio - Family-run, authentic",
+      "Osteria RossoDiVino - Local specialties"
+    ],
+    "pizza": [
+      "Al Saraceno - Sea view",
+      "Villa Zuccaro - Traditional"
+    ],
+    "dessert": [
+      "Bam Bar - Famous granita and cannoli"
+    ]
+  },
+  
+  "activities": {
+    "culture": [
+      "Ancient Greek Theatre - 10 minute walk, concerts in summer",
+      "Corso Umberto - Main shopping street, 5 minute walk",
+      "Public Gardens - Beautiful views"
+    ],
+    "nature": [
+      "Mount Etna tours - Full day trip, booking required",
+      "Alcantara Gorges - 30 minutes by car",
+      "Boat trips around Isola Bella"
+    ],
+    "experiences": [
+      "Godfather tour - Visit filming locations",
+      "Sicilian cooking class",
+      "Wine tasting at local vineyards"
+    ]
+  },
+  
+  "practical_info": {
+    "wifi": "High-speed fiber, details at check-in",
+    "check_in": "After 3:00 PM",
+    "check_out": "Before 11:00 AM",
+    "parking": "Public parking nearby, €15-20/day",
+    "grocery": "Supermarket on ground floor",
+    "pharmacy": "Multiple in town center",
+    "hospital": "San Vincenzo Hospital, 10 minutes",
+    "emergency": "112"
+  },
+  
+  "booking": {
+    "email": "info@cohenhouse.com",
+    "website": "www.cohenhouse.it",
+    "discount": "20-25% savings vs Airbnb/Booking.com for direct bookings",
+    "deposit": "30% upon booking",
+    "payment_methods": ["Bank transfer", "PayPal", "Credit card"]
+  }
+}

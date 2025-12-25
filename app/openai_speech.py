@@ -55,13 +55,25 @@ class OpenAISpeech:
 
             text = transcript.text.strip()
             
-            # Block EVERYTHING except Latin alphabet
-            if re.search(r'[^\x00-\x7F]', text):
+            # Ignore very short or nonsensical transcriptions
+            if len(text) < 5:
+                print(f"❌ Text too short: {text}")
+                return None, None
+            
+            # Allow Latin + accented characters (Italian, French, Spanish, etc.)
+            # Block only problematic scripts (emoji, Chinese, etc.)
+            if re.search(r'[𐀀-􏿿一-鿿]', text):
                 print(f"❌ Non-Latin blocked")
                 return None, None
             
             # Block YouTube spam
-            spam = ['subscribe', 'thank you', 'share', 'friends', 'social media', 'channel', 'video']
+            spam = [
+                'subscribe', 'abone', 'thank you', 'teşekkür', 'share', 
+                'friends', 'social media', 'channel', 'video', 'izlediğiniz',
+                'hoşçakalın', 'beğen', 'yorum', 'bell', 'notification',
+                'like comment', 'next video', 'patreon',
+                'müzik çal', 'politika', 'tarihi', 'çalın'
+            ]
             if any(s in text.lower() for s in spam):
                 print(f"❌ Spam blocked")
                 return None, None

@@ -42,7 +42,7 @@ ws.onmessage=e=>{
     currentAudio.play();
   }
 };
-function startRec(){if(!rec){rec=new webkitSpeechRecognition();rec.continuous=true;rec.interimResults=true;rec.lang='it-IT';rec.onstart=()=>{txt.textContent='Listening...';};rec.onresult=e=>{const r=e.results[e.results.length-1];if(!r.isFinal)return;const t=r[0].transcript.trim();console.log('Said:',t);let lang='it';if(/[\u0590-\u05FF]/.test(t))lang='he';else if(/[А-Яа-я]/.test(t))lang='bg';else if(/\b(what|how|price)\b/i.test(t))lang='en';ws.send(JSON.stringify({type:'chat',text:t,language:lang}));};rec.onend=()=>{if(!speaking)setTimeout(()=>startRec(),1000);};}rec.start();}
+function startRec(){if(!rec){rec=new webkitSpeechRecognition();rec.continuous=true;rec.interimResults=true;rec.lang='en-US';rec.onstart=()=>{txt.textContent='Listening...';};rec.onresult=e=>{const r=e.results[e.results.length-1];if(!r.isFinal)return;const t=r[0].transcript.trim();console.log('Said:',t);let lang='it';if(/[\u0590-\u05FF]/.test(t))lang='he';else if(/[А-Яа-я]/.test(t))lang='bg';else if(/\b(what|how|price)\b/i.test(t))lang='en';ws.send(JSON.stringify({type:'chat',text:t,language:lang}));};rec.onend=()=>{if(!speaking)setTimeout(()=>startRec(),1000);};}rec.start();}
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0f0c29);
 const cam=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);cam.position.set(0,1.5,4.5);
 const rend=new THREE.WebGLRenderer({antialias:true});rend.setSize(innerWidth,innerHeight);document.body.appendChild(rend.domElement);

@@ -45,7 +45,8 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
                 },
                 json={
                     "text": text,
-                    "model_id": "eleven_turbo_v2",  # ⚡ OPTIMIZATION: Using turbo model for 2x speed
+                    "model_id": "eleven_turbo_v2_5",  # Latest model with better multilingual
+                    "language_code": lang,  # Ensures correct pronunciation (it/en/bg/he)
                     "voice_settings": {
                         "stability": 0.85,  # Slightly reduced for speed
                         "similarity_boost": 0.9,  # Slightly reduced for speed

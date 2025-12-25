@@ -22,10 +22,19 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_json()
+            
+            # Ignore ping messages
+            if data.get("type") == "ping":
+                continue
+                
             text = data.get("text", "")
             lang = data.get("lang", "it")
             guest_name = data.get("guest_name")
             visit_count = data.get("visit_count", 0)
+            
+            # Ignore empty messages
+            if not text or len(text.strip()) < 2:
+                continue
             
             # Don't respond while music is playing
             # if spotify.is_music_playing():
@@ -51,8 +60,12 @@ async def websocket_endpoint(websocket: WebSocket):
             music_actions = {
                 "play_music": spotify.play_pizzica_di_san_vito,
                 "play_pizzica": spotify.play_pizzica_di_san_vito,
+                "play_traditional": spotify.play_pizzica_di_san_vito,
                 "play_fun_music": spotify.play_fun_song,
                 "play_bambole": spotify.play_fun_song,
+                "play_political": spotify.play_political_song,
+                "play_love": spotify.play_love_song,
+                "play_romantic": spotify.play_love_song,
                 "open_spotify": spotify.open_spotify
             }
             
