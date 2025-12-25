@@ -20,7 +20,7 @@ button.hide{display:none}
 <script type="module">
 import*as THREE from'three';
 import{GLTFLoader}from'three/addons/loaders/GLTFLoader.js';
-let ws,rec,bear,mix,speaking=false,currentAudio=null;
+let ws,rec,bear,mix,speaking=false,currentAudio=null,recActive=false;
 const txt=document.getElementById('txt'),btn=document.getElementById('btn');
 ws=new WebSocket('ws://'+location.host+'/ws');
 ws.onopen=()=>console.log('✅ WS');
@@ -29,20 +29,99 @@ ws.onmessage=e=>{
   if(d.text){console.log('🐻:',d.text);txt.textContent=d.text;}
   if(d.audio_url){
     speaking=true;
-    if(currentAudio){currentAudio.pause();currentAudio=null;}
-    if(rec){try{rec.stop();}catch(e){}}
+    // STOP microphone completely before playing audio
+    if(rec && recActive){
+      try{
+        rec.stop();
+        recActive=false;
+        console.log('🎤 Mic stopped for speech');
+      }catch(err){console.error('Mic stop error:',err);}
+    }
+    // Stop any currently playing audio
+    if(currentAudio){
+      currentAudio.pause();
+      currentAudio.currentTime=0;
+      currentAudio=null;
+    }
     txt.textContent='Speaking...';
     currentAudio=new Audio(d.audio_url);
+    currentAudio.volume=1.0;
     currentAudio.onended=()=>{
+      console.log('🔊 Audio ended');
       currentAudio=null;
       speaking=false;
       txt.textContent='Listening...';
-      setTimeout(()=>{if(rec && !speaking)try{rec.start();}catch(e){}},2000);
+      // Wait 2 seconds after speech ends before restarting microphone
+      setTimeout(()=>{
+        if(!speaking && !recActive){
+          try{
+            rec.start();
+            recActive=true;
+            console.log('🎤 Mic restarted');
+          }catch(err){console.error('Mic restart error:',err);}
+        }
+      },2000);
     };
-    currentAudio.play();
+    currentAudio.onerror=()=>{
+      console.error('Audio playback error');
+      speaking=false;
+      currentAudio=null;
+    };
+    currentAudio.play().catch(err=>console.error('Play error:',err));
   }
 };
-function startRec(){if(!rec){rec=new webkitSpeechRecognition();rec.continuous=true;rec.interimResults=true;rec.lang='it-IT';rec.onstart=()=>{txt.textContent='Listening...';};rec.onresult=e=>{const r=e.results[e.results.length-1];if(!r.isFinal)return;const t=r[0].transcript.trim();console.log('Said:',t);let lang='it';if(/[\u0590-\u05FF]/.test(t))lang='he';else if(/[А-Яа-я]/.test(t))lang='bg';else if(/\b(what|how|price)\b/i.test(t))lang='en';ws.send(JSON.stringify({type:'chat',text:t,language:lang}));};rec.onend=()=>{if(!speaking)setTimeout(()=>startRec(),1000);};}rec.start();}
+function startRec(){
+  if(!rec){
+    rec=new webkitSpeechRecognition();
+    rec.continuous=false;  // Changed to false to prevent overlap
+    rec.interimResults=false;  // Changed to false for cleaner results
+    rec.lang='it-IT';
+    rec.onstart=()=>{
+      recActive=true;
+      txt.textContent='Listening...';
+      console.log('🎤 Mic started');
+    };
+    rec.onresult=e=>{
+      const r=e.results[e.results.length-1];
+      if(!r.isFinal)return;
+      const t=r[0].transcript.trim();
+      console.log('Said:',t);
+      let lang='it';
+      if(/[\u0590-\u05FF]/.test(t))lang='he';
+      else if(/[А-Яа-я]/.test(t))lang='bg';
+      else if(/\b(what|how|price|where|when)\b/i.test(t))lang='en';
+      ws.send(JSON.stringify({type:'chat',text:t,language:lang}));
+    };
+    rec.onend=()=>{
+      recActive=false;
+      console.log('🎤 Mic ended');
+      // Auto-restart only if not speaking
+      if(!speaking){
+        setTimeout(()=>{
+          if(!speaking && !recActive){
+            try{
+              rec.start();
+              recActive=true;
+            }catch(err){console.error('Mic auto-restart error:',err);}
+          }
+        },500);
+      }
+    };
+    rec.onerror=e=>{
+      recActive=false;
+      console.error('Mic error:',e.error);
+      if(e.error!=='no-speech' && e.error!=='aborted'){
+        setTimeout(()=>{
+          if(!speaking && !recActive){
+            try{rec.start();recActive=true;}catch(err){}
+          }
+        },1000);
+      }
+    };
+  }
+  rec.start();
+  recActive=true;
+}
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x0f0c29);
 const cam=new THREE.PerspectiveCamera(45,innerWidth/innerHeight,.1,100);cam.position.set(0,1.5,4.5);
 const rend=new THREE.WebGLRenderer({antialias:true});rend.setSize(innerWidth,innerHeight);document.body.appendChild(rend.domElement);

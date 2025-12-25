@@ -12,11 +12,11 @@ if ELEVENLABS_API_KEY:
 else:
     print("⚠️ No ElevenLabs API key!")
 
-# Original voice
-VOICE_ID = "RxJZoVFTFvDcilRItefF"  # Original bear voice
+# Italian voice - Rachel (multilingual, clear Italian pronunciation)
+VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - excellent for Italian
 
 async def text_to_speech(text: str, lang: str = "it") -> str:
-    """Generate TTS with original bear voice - OPTIMIZED"""
+    """Generate TTS with Italian-optimized voice for proper pronunciation"""
     if not ELEVENLABS_API_KEY or not text or len(text) < 2:
         return None
    
@@ -25,7 +25,7 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         filename = f"tts_{text_hash}.mp3"
         filepath = f"/tmp/{filename}"
        
-        # ⚡ OPTIMIZATION: Cache hit = instant response
+        # Cache hit = instant response
         if os.path.exists(filepath):
             print(f"⚡ TTS cached (instant): {filename}")
             return f"/{filename}"
@@ -35,8 +35,7 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         preview = text[:50] + "..." if len(text) > 50 else text
         print(f"🎤 Generating TTS [{lang}]: {preview}")
        
-        # ⚡ OPTIMIZATION: Reduced timeout from 30s to 15s
-        async with httpx.AsyncClient(timeout=15.0) as client:
+        async with httpx.AsyncClient(timeout=20.0) as client:
             response = await client.post(
                 url,
                 headers={
@@ -45,11 +44,11 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
                 },
                 json={
                     "text": text,
-                    "model_id": "eleven_turbo_v2",  # ⚡ OPTIMIZATION: Using turbo model for 2x speed
+                    "model_id": "eleven_multilingual_v2",  # Better for Italian pronunciation
                     "voice_settings": {
-                        "stability": 0.85,  # Slightly reduced for speed
-                        "similarity_boost": 0.9,  # Slightly reduced for speed
-                        "style": 0.3  # Reduced for faster generation
+                        "stability": 0.95,  # High stability for consistent Italian pronunciation
+                        "similarity_boost": 1.0,  # Maximum for authentic Italian accent
+                        "style": 0.0  # Neutral for clear, literary Italian
                     }
                 }
             )
