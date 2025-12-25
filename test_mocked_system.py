@@ -168,7 +168,7 @@ def test_response_cache_comprehensive():
     print_header("TEST 3: Response Cache Comprehensive")
     
     try:
-        from app.response_cache import get_quick_response, QUICK_RESPONSES
+        from app.utils.response_cache import get_quick_response, QUICK_RESPONSES
         
         # Test all Italian responses
         print_test("Testing Italian responses:", "info")

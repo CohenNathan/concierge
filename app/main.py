@@ -1,15 +1,15 @@
 import time
 import random
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, File, UploadFile
-from app.booking import router as booking_router
+from app.handlers.booking import router as booking_router
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import os
-from app.response_cache import get_quick_response
-from app.openai_assistant import assistant
-from app.elevenlabs_tts import text_to_speech
-from app.spotify_control import spotify
-from app.browser_control import browser
+from app.utils.response_cache import get_quick_response
+from app.api.openai_assistant import assistant
+from app.services.elevenlabs_tts import text_to_speech
+from app.services.spotify_control import spotify
+from app.utils.browser_control import browser
 
 app = FastAPI()
 app.include_router(booking_router)
@@ -94,7 +94,7 @@ async def websocket_endpoint(websocket: WebSocket):
 @app.post("/upload-audio")
 async def upload_audio(file: UploadFile = File(...)):
     """Receive audio from browser and transcribe with Whisper"""
-    from app.openai_speech import get_speech_client
+    from app.api.openai_speech import get_speech_client
     
     try:
         # Save uploaded audio
@@ -121,11 +121,11 @@ async def upload_audio(file: UploadFile = File(...)):
 
 @app.get("/")
 async def get_index():
-    return FileResponse("web/solomon.html")
+    return FileResponse("web/index.html")
 
 @app.get("/avatar.glb")
 async def get_avatar():
-    return FileResponse("web/avatar.glb")
+    return FileResponse("web/assets/models/avatar.glb")
 
 # Serve TTS files from /tmp
 @app.get("/{filename}")
@@ -138,7 +138,7 @@ async def get_file(filename: str):
 
 # Ring Doorbell Integration
 from app.ring_listener import RingListener
-from app.doorbell_handler import DoorbellHandler
+from app.services.doorbell_handler import DoorbellHandler
 from app.ring_client import RingDoorbell
 
 ring_listener = RingListener()
@@ -179,7 +179,7 @@ if __name__ == "__main__":
 @app.post("/recognize-face")
 async def recognize_face(data: dict):
     """Recognize face from webcam"""
-    from app.face_recognition_system import face_system
+    from app.services.face_recognition_system import face_system
     
     try:
         image_base64 = data.get('image')
@@ -196,7 +196,7 @@ async def recognize_face(data: dict):
 @app.post("/register-face")
 async def register_face(data: dict):
     """Register new face with name"""
-    from app.face_recognition_system import face_system
+    from app.services.face_recognition_system import face_system
     
     try:
         name = data.get('name')
@@ -213,7 +213,7 @@ async def register_face(data: dict):
 
 # Background task to keep Solomon on top
 import asyncio
-from app.window_manager import window_manager
+from app.utils.window_manager import window_manager
 
 async def keep_solomon_visible():
     """Keep Solomon window always on top"""
