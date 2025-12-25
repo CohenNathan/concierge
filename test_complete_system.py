@@ -38,11 +38,11 @@ def test_imports():
     print_header("TEST 1: Module Import Tests")
     
     modules_to_test = [
-        ("app.openai_assistant", "OpenAI Assistant (Main AI Logic)"),
-        ("app.openai_speech", "OpenAI Speech (Whisper Recognition)"),
-        ("app.response_cache", "Response Cache (Quick Answers)"),
-        ("app.spotify_control", "Spotify Control (Music System)"),
-        ("app.elevenlabs_tts", "ElevenLabs TTS (Voice Output)"),
+        ("app.api.openai_assistant", "OpenAI Assistant (Main AI Logic)"),
+        ("app.api.openai_speech", "OpenAI Speech (Whisper Recognition)"),
+        ("app.utils.response_cache", "Response Cache (Quick Answers)"),
+        ("app.services.spotify_control", "Spotify Control (Music System)"),
+        ("app.services.elevenlabs_tts", "ElevenLabs TTS (Voice Output)"),
         ("app.main", "FastAPI Main Server"),
     ]
     
@@ -62,7 +62,7 @@ def test_openai_assistant_structure():
     print_header("TEST 2: OpenAI Assistant (AI Brain) Structure")
     
     try:
-        from app.openai_assistant import assistant, OpenAIAssistant
+        from app.api.openai_assistant import assistant, OpenAIAssistant
         
         # Check if assistant exists
         if assistant:
@@ -213,7 +213,7 @@ def test_tts_structure():
     print_header("TEST 6: Text-to-Speech (ElevenLabs) Structure")
     
     try:
-        from app.elevenlabs_tts import text_to_speech
+        from app.services.elevenlabs_tts import text_to_speech
         
         if text_to_speech:
             print_test("TTS function exists", "pass")
@@ -264,7 +264,7 @@ def test_cohen_house_data():
     print_header("TEST 8: Cohen House Apartment Data")
     
     try:
-        from app.openai_assistant import assistant
+        from app.api.openai_assistant import assistant
         
         # Check if system prompt contains apartment data
         # We'll test by examining the assistant's configuration indirectly
@@ -290,7 +290,7 @@ async def test_ai_integration():
     print_header("TEST 9: AI Integration (OpenAI API)")
     
     try:
-        from app.openai_assistant import assistant
+        from app.api.openai_assistant import assistant
         import os
         
         api_key = os.getenv("OPENAI_API_KEY")

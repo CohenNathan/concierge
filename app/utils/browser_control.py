@@ -1,5 +1,5 @@
 import subprocess
-from app.window_manager import window_manager
+from app.utils.window_manager import window_manager
 
 class BrowserController:
     def __init__(self):
