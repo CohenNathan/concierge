@@ -15,13 +15,26 @@ else:
 # Native Italian voice - Matilda (specifically trained for Italian)
 VOICE_ID = "XrExE9yKIg1WjnnlVkGX"  # Matilda - native Italian speaker
 
+def fix_italian_pronunciation(text: str, lang: str) -> str:
+    """Fix pronunciation of proper nouns for Italian TTS"""
+    if lang == "it":
+        # Fix "Cohen House" pronunciation - should be "Koen Haus" in Italian
+        text = text.replace("Cohen House", "Koen Haus")
+        text = text.replace("cohen house", "Koen Haus")
+        text = text.replace("Cohen house", "Koen Haus")
+        text = text.replace("COHEN HOUSE", "Koen Haus")
+    return text
+
 async def text_to_speech(text: str, lang: str = "it") -> str:
     """Generate TTS with native Italian voice for authentic pronunciation"""
     if not ELEVENLABS_API_KEY or not text or len(text) < 2:
         return None
    
-    try: 
-        text_hash = hashlib.md5(f"{text}_{lang}_{VOICE_ID}".encode()).hexdigest()[:8]
+    try:
+        # Fix pronunciation for Italian
+        text_for_tts = fix_italian_pronunciation(text, lang)
+        
+        text_hash = hashlib.md5(f"{text_for_tts}_{lang}_{VOICE_ID}".encode()).hexdigest()[:8]
         filename = f"tts_{text_hash}.mp3"
         filepath = f"/tmp/{filename}"
        
@@ -32,12 +45,12 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
        
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
        
-        preview = text[:50] + "..." if len(text) > 50 else text
+        preview = text_for_tts[:50] + "..." if len(text_for_tts) > 50 else text_for_tts
         print(f"🎤 Generating TTS [{lang}] with Matilda: {preview}")
        
         # Prepare request with language specification
         request_data = {
-            "text": text,
+            "text": text_for_tts,
             "model_id": "eleven_multilingual_v2",
             "voice_settings": {
                 "stability": 0.75,  # Slightly lower for more natural variation
