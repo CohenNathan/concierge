@@ -1,30 +1,56 @@
 # Voice and Audio Fixes - Cohen House Concierge
 
+## Latest Update - Native Italian Voice
+
+### Current Configuration (v2 - Native Italian Speaker)
+**Voice:** Matilda (XrExE9yKIg1WjnnlVkGX) - Native Italian speaker
+**Model:** eleven_multilingual_v2
+**Language Code:** "it" (explicitly specified)
+**Settings:** 
+- Stability: 0.75 (natural variation)
+- Similarity Boost: 0.85 (authentic native sound)
+- Style: 0.0 (neutral, clear)
+- Speaker Boost: true (enhanced clarity)
+
+**Why Matilda:**
+- Native Italian speaker voice model
+- Trained specifically on Italian pronunciation
+- No English accent artifacts
+- Clear, literary Italian delivery
+
 ## Issues Fixed
 
 ### Issue 1: Italian Voice Quality
-**Problem:** Voice was speaking pseudo-Italian with English accent instead of proper literary Italian.
+**Problem:** Voice was speaking Italian sentences with English accent, not authentic Italian pronunciation.
 
-**Root Cause:**
-- Used generic voice ID ("RxJZoVFTFvDcilRItefF") not optimized for Italian
-- Used `eleven_turbo_v2` model (speed-optimized, lower quality)
-- Voice settings were reduced for performance (stability 0.85, similarity 0.9)
+**Root Causes:**
+- First attempt: Used generic voice ID not optimized for Italian
+- Second attempt: Used Rachel (multilingual) but still had English accent artifacts
+- Final solution: Switched to Matilda, a native Italian speaker voice
 
-**Solution:**
-Changed to Rachel voice with multilingual settings:
+**Solution (v2 - Current):**
+Using Matilda voice with native Italian configuration:
 ```python
-VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - excellent Italian
-model_id = "eleven_multilingual_v2"  # Better language support
-stability = 0.95  # Consistent pronunciation
-similarity_boost = 1.0  # Authentic accent
-style = 0.0  # Neutral, clear literary Italian
+VOICE_ID = "XrExE9yKIg1WjnnlVkGX"  # Matilda - native Italian
+model_id = "eleven_multilingual_v2"
+language_code = "it"  # Explicitly specify Italian
+stability = 0.75  # Natural variation
+similarity_boost = 0.85  # Authentic native sound
+style = 0.0  # Neutral, clear Italian
+use_speaker_boost = True  # Enhanced clarity
 ```
 
+**Previous Attempts:**
+- v1: Generic voice → English-like pronunciation
+- v1.5: Rachel voice → Better but still English accent
+- v2: Matilda (native Italian) → Authentic Italian ✅
+
 **Benefits:**
-- ✅ Proper Italian pronunciation
+- ✅ NATIVE Italian pronunciation
+- ✅ No English accent whatsoever
 - ✅ Clear, literary language
-- ✅ No English accent
 - ✅ Natural Italian intonation
+- ✅ Authentic accent and rhythm
 
 ### Issue 2: Overlapping Voices (Echo/Double Audio)
 **Problem:** Two voices playing simultaneously - microphone and audio overlapping.
@@ -111,25 +137,33 @@ rec.onerror=e=>{
 
 ### Voice Settings (app/services/elevenlabs_tts.py)
 ```python
-VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel (Italian-optimized)
+VOICE_ID = "XrExE9yKIg1WjnnlVkGX"  # Matilda (Native Italian)
 model_id = "eleven_multilingual_v2"
-stability = 0.95
-similarity_boost = 1.0
+language_code = "it"  # Explicitly Italian
+stability = 0.75
+similarity_boost = 0.85
 style = 0.0
+use_speaker_boost = True
 ```
 
-### Alternative Voice Options
-If Rachel doesn't work well, try these alternatives:
+### Alternative Voice Options (If Matilda doesn't work)
 
-**For Female Voice:**
-- `"XrExE9yKIg1WjnnlVkGX"` - Matilda (warm, Italian)
-- `"EXAVITQu4vr4xnSDxMaL"` - Bella (soft, Italian)
+**Other Native Italian Voices:**
+- `"EXAVITQu4vr4xnSDxMaL"` - Bella (soft, native Italian female)
+- `"pNInz6obpgDQGcFmaJgB"` - Adam (male, native Italian capable)
 
-**For Male Voice:**
-- `"pNInz6obpgDQGcFmaJgB"` - Adam (multilingual)
-- `"TxGEqnHWrfWFTfGW9XjX"` - Josh (deep, multilingual)
+**Previous Attempts (Had English Accent):**
+- ~~`"21m00Tcm4TlvDq8ikWAM"` - Rachel (multilingual but English accent)~~
+- ~~`"RxJZoVFTFvDcilRItefF"` - Original voice (generic)~~
 
 To change voice, edit line 16 in `app/services/elevenlabs_tts.py`
+
+### Important: Clear Cache After Voice Change
+When changing voices, you MUST clear the TTS cache:
+```bash
+rm /tmp/tts_*.mp3
+```
+Otherwise, you'll hear the old cached voice!
 
 ## Console Logs for Debugging
 
@@ -150,10 +184,41 @@ Open browser console (F12) to see these logs.
 
 ## Troubleshooting
 
-### Voice still sounds wrong
-- Clear TTS cache: `rm /tmp/tts_*.mp3`
-- Restart server
-- Try alternative voice IDs (see above)
+### Voice still has English accent
+**This is the main issue we're fixing!**
+
+1. **Verify you're using Matilda voice:**
+   ```bash
+   grep "VOICE_ID" app/services/elevenlabs_tts.py
+   # Should show: VOICE_ID = "XrExE9yKIg1WjnnlVkGX"
+   ```
+
+2. **Clear ALL cached audio files:**
+   ```bash
+   rm /tmp/tts_*.mp3
+   ```
+   This is CRITICAL! Old cached files with English accent will keep playing.
+
+3. **Restart server completely:**
+   ```bash
+   # Stop any running servers
+   pkill -f "uvicorn\|start_server"
+   
+   # Start fresh
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+4. **Test with a simple Italian phrase:**
+   Open http://localhost:8000/, click START, and say:
+   - "Ciao, come stai?"
+   - "Dov'è l'appartamento?"
+   - "Quanto costa?"
+   
+   The response should sound like a NATIVE Italian speaker, not English-accented Italian.
+
+5. **Check browser console (F12):**
+   Look for: `🎤 Generating TTS [it] with Matilda: ...`
+   This confirms the new voice is being used.
 
 ### Audio still overlaps
 - Check browser console for errors

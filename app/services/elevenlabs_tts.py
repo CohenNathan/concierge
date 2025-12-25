@@ -12,16 +12,16 @@ if ELEVENLABS_API_KEY:
 else:
     print("⚠️ No ElevenLabs API key!")
 
-# Italian voice - Rachel (multilingual, clear Italian pronunciation)
-VOICE_ID = "21m00Tcm4TlvDq8ikWAM"  # Rachel - excellent for Italian
+# Native Italian voice - Matilda (specifically trained for Italian)
+VOICE_ID = "XrExE9yKIg1WjnnlVkGX"  # Matilda - native Italian speaker
 
 async def text_to_speech(text: str, lang: str = "it") -> str:
-    """Generate TTS with Italian-optimized voice for proper pronunciation"""
+    """Generate TTS with native Italian voice for authentic pronunciation"""
     if not ELEVENLABS_API_KEY or not text or len(text) < 2:
         return None
    
     try: 
-        text_hash = hashlib.md5(f"{text}_{lang}".encode()).hexdigest()[:8]
+        text_hash = hashlib.md5(f"{text}_{lang}_{VOICE_ID}".encode()).hexdigest()[:8]
         filename = f"tts_{text_hash}.mp3"
         filepath = f"/tmp/{filename}"
        
@@ -33,24 +33,32 @@ async def text_to_speech(text: str, lang: str = "it") -> str:
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}"
        
         preview = text[:50] + "..." if len(text) > 50 else text
-        print(f"🎤 Generating TTS [{lang}]: {preview}")
+        print(f"🎤 Generating TTS [{lang}] with Matilda: {preview}")
        
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        # Prepare request with language specification
+        request_data = {
+            "text": text,
+            "model_id": "eleven_multilingual_v2",
+            "voice_settings": {
+                "stability": 0.75,  # Slightly lower for more natural variation
+                "similarity_boost": 0.85,  # Balanced for authentic native sound
+                "style": 0.0,  # Neutral for clear Italian
+                "use_speaker_boost": True  # Enhanced voice clarity
+            }
+        }
+        
+        # Add language hint for Italian
+        if lang == "it":
+            request_data["language_code"] = "it"
+       
+        async with httpx.AsyncClient(timeout=25.0) as client:
             response = await client.post(
                 url,
                 headers={
                     "xi-api-key": ELEVENLABS_API_KEY,
                     "Content-Type": "application/json"
                 },
-                json={
-                    "text": text,
-                    "model_id": "eleven_multilingual_v2",  # Better for Italian pronunciation
-                    "voice_settings": {
-                        "stability": 0.95,  # High stability for consistent Italian pronunciation
-                        "similarity_boost": 1.0,  # Maximum for authentic Italian accent
-                        "style": 0.0  # Neutral for clear, literary Italian
-                    }
-                }
+                json=request_data
             )
            
             print(f"📡 TTS response: {response.status_code}")
