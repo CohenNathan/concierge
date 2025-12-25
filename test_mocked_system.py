@@ -41,7 +41,7 @@ async def test_ai_response_logic():
         # Mock OpenAI client
         with patch.dict(os.environ, {'OPENAI_API_KEY': 'test-key'}):
             # Import after setting env var
-            from app import openai_assistant
+            from app.api import openai_assistant
             
             # Create mock response
             mock_completion = Mock()
@@ -112,7 +112,7 @@ async def test_speech_transcription_logic():
     
     try:
         with patch.dict(os.environ, {'OPENAI_API_KEY': 'test-key'}):
-            from app import openai_speech
+            from app.api import openai_speech
             
             # Create mock transcript
             mock_transcript = Mock()
@@ -213,7 +213,7 @@ def test_spotify_integration():
     print_header("TEST 4: Spotify Integration")
     
     try:
-        from app.spotify_control import spotify, SpotifyController
+        from app.services.spotify_control import spotify, SpotifyController
         
         # Test controller
         print_test(f"Spotify controller initialized", "pass")
@@ -254,7 +254,7 @@ async def test_tts_integration():
     
     try:
         with patch.dict(os.environ, {'ELEVENLABS_API_KEY': 'test-key'}):
-            from app import elevenlabs_tts
+            from app.services import elevenlabs_tts
             
             # Mock httpx AsyncClient
             mock_response = Mock()
@@ -331,7 +331,7 @@ def test_cohen_house_data():
     
     try:
         # Read the assistant file
-        with open('app/openai_assistant.py', 'r') as f:
+        with open('app/api/openai_assistant.py', 'r') as f:
             content = f.read()
         
         # Check for apartment data
@@ -371,13 +371,14 @@ def test_frontend_structure():
     print_header("TEST 8: Frontend Structure")
     
     try:
-        solomon_html = Path('web/solomon.html')
+        # Check for index.html (the production file)
+        index_html = Path('web/index.html')
         
-        if not solomon_html.exists():
-            print_test("solomon.html NOT FOUND", "fail")
+        if not index_html.exists():
+            print_test("index.html NOT FOUND", "fail")
             return False
         
-        with open(solomon_html, 'r') as f:
+        with open(index_html, 'r') as f:
             content = f.read()
         
         # Check for critical components
