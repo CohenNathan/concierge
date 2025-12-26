@@ -28,6 +28,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 continue
                 
             text = data.get("text", "")
+            if text:
+                print(f"💬 Question: {text}")
             lang = data.get("lang", "it")
             guest_name = data.get("guest_name")
             visit_count = data.get("visit_count", 0)

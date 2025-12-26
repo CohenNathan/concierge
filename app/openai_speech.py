@@ -2,6 +2,7 @@ from openai import AsyncOpenAI
 import os
 from dotenv import load_dotenv
 import re
+from app.audio_filter import preprocess_audio
 
 load_dotenv()
 
@@ -50,13 +51,22 @@ class OpenAISpeech:
                 file=audio_file,
                 response_format="json",  # ⚡ Changed from verbose_json for faster response
                 temperature=0.0,
-                prompt="Cohen House, Taormina, Sicily, apartment, BOHO, VINTAGE, SHABBY"  # Context for better accuracy
-            )
+                    prompt="Cohen House, Taormina, Sicily, apartment, BOHO, VINTAGE, SHABBY"  # Context for better accuracy
+                )
+            
+            # Cleanup
+            import os
+            try:
+                if 'cleaned_path' in locals() and os.path.exists(cleaned_path):
+                    os.remove(cleaned_path)
+            except:
+                pass
 
             text = transcript.text.strip()
             
             # Ignore very short or nonsensical transcriptions
-            if len(text) < 5:
+            # Block only VERY short noise
+            if len(text) < 3:
                 print(f"❌ Text too short: {text}")
                 return None, None
             
@@ -67,14 +77,18 @@ class OpenAISpeech:
                 return None, None
             
             # Block YouTube spam
-            spam = [
-                'subscribe', 'abone', 'thank you', 'teşekkür', 'share', 
-                'friends', 'social media', 'channel', 'video', 'izlediğiniz',
-                'hoşçakalın', 'beğen', 'yorum', 'bell', 'notification',
-                'like comment', 'next video', 'patreon',
-                'müzik çal', 'politika', 'tarihi', 'çalın'
-            ]
-            if any(s in text.lower() for s in spam):
+            # Load comprehensive spam database
+            import json
+            try:
+                with open("app/spam_database.json", "r", encoding="utf-8") as f:
+                    spam_db = json.load(f)
+                    spam = []
+                    for category in spam_db.values():
+                        spam.extend(category)
+            except:
+                spam = ["subscribe", "abone", "дякую"]
+
+            if sum(s in text.lower() for s in spam) >= 2:  # Require 2+ spam words
                 print(f"❌ Spam blocked")
                 return None, None
             

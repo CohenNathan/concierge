@@ -54,7 +54,7 @@ Isola Bella: {beaches['isola_bella']['distance']} - {beaches['isola_bella']['typ
         context_parts.append(self.get_location_info())
         
         # Check for specific topics
-        if any(word in query_lower for word in ['beach', 'mare', 'spiaggia', 'mazzaro', 'isola bella']):
+        if any(word in query_lower for word in ['beach', 'mare', 'spiaggia', 'mazzaro', 'mazzarò', 'isola', 'bella', 'isola bella']):
             context_parts.append(self.get_beach_info())
         
         if any(word in query_lower for word in ['apartment', 'appartamento', 'boho', 'vintage', 'shabby', 'price', 'prezzo', 'cost']):

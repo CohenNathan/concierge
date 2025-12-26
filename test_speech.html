@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Speech Test</h1>
+<button onclick="startTest()">Start Test</button>
+<div id="result"></div>
+
+<script>
+function startTest() {
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    document.getElementById('result').innerHTML = 'Heard: ' + text;
+    console.log('Speech recognized:', text);
+  };
+  recognition.onerror = (e) => {
+    console.error('Speech error:', e.error);
+    document.getElementById('result').innerHTML = 'Error: ' + e.error;
+  };
+  recognition.start();
+}
+</script>
+</body>
+</html>

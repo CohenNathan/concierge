@@ -57,9 +57,9 @@ QUICK_RESPONSES = {
         'terrazza': "BOHO ha terrazza privata con vista Monte Etna!",
         
         # Music
-        'musica': "FIRE!",
-        'canzone': "FIRE!",
-        'suona': "FIRE!",
+        # # 'musica': "FIRE!",  # DISABLED - let AI handle with dramatic phrases  # DISABLED - let AI handle with dramatic phrases
+        # # 'canzone': "FIRE!",  # DISABLED  # DISABLED
+        # # 'suona': "FIRE!",  # DISABLED  # DISABLED
         
         # Name/Identity
         'chi sei': "Sono Solomon, orso AI concierge di Cohen House!",
@@ -130,9 +130,9 @@ QUICK_RESPONSES = {
         'terrace': "BOHO has private terrace with Mount Etna view!",
         
         # Music
-        'music': "FIRE!",
-        'song': "FIRE!",
-        'play': "FIRE!",
+        # # 'music': "FIRE!",  # DISABLED  # DISABLED
+        # # 'song': "FIRE!",  # DISABLED  # DISABLED
+        # # 'play': "FIRE!",  # DISABLED  # DISABLED
         
         # Name/Identity
         'who are you': "I'm Solomon, AI bear concierge at Cohen House!",
@@ -155,7 +155,10 @@ def get_quick_response(text: str, lang: str):
     
     # ⚡ SPEED OPTIMIZATION: Try exact keyword match first
     for keyword, response in responses.items():
-        if keyword in text_lower:
+        # Use word boundaries to avoid false matches (e.g., "hi" in "which")
+        import re
+        pattern = r'' + re.escape(keyword) + r''
+        if re.search(pattern, text_lower):
             is_music = keyword in ['musica', 'music', 'canzone', 'song', 'suona', 'play']
             print(f"⚡ INSTANT: {keyword}")
             return response, is_music

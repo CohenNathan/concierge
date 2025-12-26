@@ -1,0 +1,46 @@
+{
+  "youtube_generic": [
+    "subscribe",
+    "like",
+    "comment",
+    "share",
+    "bell",
+    "notification",
+    "channel",
+    "video",
+    "content",
+    "patreon",
+    "thanks for watching"
+  ],
+  "turkish": [
+    "abone",
+    "beğen",
+    "yorum",
+    "paylaş",
+    "izlediğiniz",
+    "teşekkür",
+    "hoşçakalın",
+    "müzik",
+    "çalın",
+    "politika",
+    "tarihi"
+  ],
+  "ukrainian": [
+    "дякую",
+    "перегляд",
+    "підпис",
+    "лайк",
+    "коментар",
+    "дивіться",
+    "слідкуйте",
+    "канал",
+    "дякуємо"
+  ],
+  "russian": [
+    "спасибо",
+    "подписка",
+    "лайк",
+    "комментарий",
+    "смотрите"
+  ]
+}
